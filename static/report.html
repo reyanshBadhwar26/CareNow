@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AccessibilityPlus Reporter</title>
+    <title>CareNow - Report Clinic Wait Time</title>
     <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/static/css/styles.css" />
@@ -16,400 +16,546 @@
     <script defer src="/static/js/metrics.js"></script>
   </head>
   <body>
-    <div class="aurora-canvas" aria-hidden="true">
-      <span class="aurora aurora-one"></span>
-      <span class="aurora aurora-two"></span>
-      <span class="aurora aurora-three"></span>
-    </div>
-
-    <div class="noise-overlay" aria-hidden="true"></div>
-
-    <div class="shell nav-shell">
-      <nav class="nav glass">
+    <!-- Navigation -->
+    <nav class="nav-container">
+      <div class="nav">
         <div class="brand">
-          <img src="/static/img/favicon.svg" alt="" class="brand-mark" />
-          AccessibilityPlus
+          <div class="brand-mark">
+            <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="32" cy="32" r="20" fill="rgba(13, 71, 161, 0.1)" stroke="rgba(13, 71, 161, 0.3)" stroke-width="1"/>
+              <rect x="29" y="18" width="6" height="28" rx="3" fill="#0d47a1"/>
+              <rect x="18" y="29" width="28" height="6" rx="3" fill="#0d47a1"/>
+              <line x1="32" y1="32" x2="40" y2="32" stroke="#1976d2" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="32" y1="32" x2="32" y2="22" stroke="#1976d2" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="32" cy="32" r="2.5" fill="#1976d2"/>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-name">CareNow</span>
+            <span class="brand-tagline">Wait Time Intelligence</span>
+          </div>
         </div>
         <div class="nav-links">
-          <a href="/" class="is-active">Report</a>
-          <a href="/map">Live Map</a>
-          <a href="#team">Team</a>
-          <a href="mailto:divakargaba@gmail.com">Partner</a>
+          <a href="/" class="is-active">
+            <span class="nav-icon"></span>
+            <span>Report</span>
+          </a>
+          <a href="/map">
+            <span class="nav-icon"></span>
+            <span>Map</span>
+          </a>
+        </div>
         </div>
       </nav>
-    </div>
 
-    <header class="hero shell split">
-      <div class="hero-copy">
-        <span class="eyebrow">Field intelligence</span>
-        <h1>
-          Report accessibility wins and gaps with a cinematic, AI-assisted hub.
+    <!-- Hero Section with Background Pattern -->
+    <section class="hero-section">
+      <div class="hero-background">
+        <div class="hero-pattern"></div>
+        <div class="hero-gradient"></div>
+      </div>
+      <div class="hero-content-wrapper">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="badge-pulse"></span>
+            <span>Live Wait Time Data</span>
+    </div>
+          <h1 class="hero-title">
+            Report Clinic
+            <span class="gradient-text">Wait Times</span>
         </h1>
-        <p>
-          Snap, describe, and share your surroundings. Our AWS + GPT trust layer
-          validates every detail and publishes it to the public map within
-          seconds.
-        </p>
-        <div class="hero-actions">
-          <a class="link-button primary" href="#report-form">Start reporting</a>
-          <a class="link-button ghost" href="/map">Preview live map</a>
-        </div>
-        <div class="hero-stats">
-          <div class="stat-card">
-            <span class="stat-value" data-stat="reports-count">--</span>
-            <span class="stat-label">Reports submitted</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-value" data-stat="avg-confidence">--</span>
-            <span class="stat-label">Avg AI confidence</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-value" data-stat="last-updated">--</span>
-            <span class="stat-label">Last update</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="hero-visual holo">
-        <div class="holo-core">
-          <div class="pulse-ring"></div>
-          <div class="pulse-ring ring-delay"></div>
-          <div class="grid-lines"></div>
-
-          <div class="holo-card primary-card">
-            <span class="pill success">Ramp detected</span>
-            <strong>Match score</strong>
-            <div class="progress">
-              <span class="progress-fill" data-progress="avg-confidence" style="--progress: 0"></span>
-            </div>
-            <small>AI verification <span data-stat="avg-confidence">--</span></small>
-          </div>
-
-          <div class="holo-card secondary-card">
-            <span class="pill warning">Needs review</span>
-            <strong>Review queue</strong>
-            <small><span data-stat="mismatch-count">--</span> reports flagged for review</small>
-          </div>
-
-          <div class="spark spark-one"></div>
-          <div class="spark spark-two"></div>
-          <div class="spark spark-three"></div>
-        </div>
-      </div>
-    </header>
-
-    <div class="ticker" aria-hidden="true">
-      <div class="ticker-track">
-        <span>Auto GPS capture</span>
-        <span>Amazon Rekognition labels</span>
-        <span>GPT fact-checking</span>
-        <span>Instant municipal-ready exports</span>
-        <span>AccessibilityPlus community</span>
-      </div>
-    </div>
-
-    <main class="layout">
-      <section class="card form-card">
-        <div class="card-header">
-          <span class="eyebrow subtle">Submit evidence</span>
-          <h2>Drop a hyperlocal accessibility signal</h2>
-          <p>
-            Clear descriptions and focused photos help our models validate your
-            findings faster.
+          <p class="hero-description">
+            Help patients make informed decisions by sharing your clinic visit experience. 
+            Every report helps our AI system provide accurate wait time predictions for better healthcare access.
           </p>
+          <div class="hero-stats-inline">
+            <div class="hero-stat-item">
+              <div class="hero-stat-value" data-stat="reports-count">--</div>
+              <div class="hero-stat-label">Reports</div>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat-item">
+              <div class="hero-stat-value" data-stat="clinics-count">--</div>
+              <div class="hero-stat-label">Clinics</div>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat-item">
+              <div class="hero-stat-value" data-stat="avg-wait-time">--</div>
+              <div class="hero-stat-label">Avg Wait</div>
         </div>
-
-        <form id="report-form" class="form">
-          <label class="form-field">
-            <span>Description</span>
-            <textarea
-              name="description"
-              minlength="5"
-              rows="3"
-              placeholder="e.g., Wheelchair ramp near the Main St entrance with a gentle incline"
-              required
-            ></textarea>
-          </label>
-
-          <label class="form-field file-field">
-            <span>Photo</span>
-            <div class="file-drop">
-              <input
-                type="file"
-                name="image"
-                accept="image/*"
-                required
-                class="file-input"
-                aria-describedby="file-hint"
-              />
-              <div class="file-cta" aria-hidden="true">
-                <span class="file-icon"></span>
-                <div class="file-copy">
-                  <strong>Drag &amp; drop your evidence</strong>
-                  <span>or <em>browse from device</em></span>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-card animated-card">
+            <div class="hero-card-glow"></div>
+            <div class="hero-card-content">
+              <div class="hero-card-header">
+                <div class="hero-card-icon-wrapper">
+                  <svg class="hero-card-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <div class="icon-pulse"></div>
+                </div>
+                <div>
+                  <h3>Quick Report</h3>
+                  <p>Share your visit in seconds</p>
                 </div>
               </div>
-              <p class="file-selected" data-file-selected hidden>
-                <span class="pill success">Ready</span>
-                <span class="file-name" data-file-name>Image selected</span>
-              </p>
-            </div>
-            <small class="field-hint">Use landscape photos for richer AI labels.</small>
-          </label>
+              <div class="hero-card-progress">
+                <div class="progress-indicator">
+                  <div class="progress-dot active">
+                    <div class="progress-dot-inner"></div>
+                  </div>
+                  <div class="progress-line active"></div>
+                  <div class="progress-dot active">
+                    <div class="progress-dot-inner"></div>
+                  </div>
+                  <div class="progress-line"></div>
+                  <div class="progress-dot">
+                    <div class="progress-dot-inner"></div>
+                  </div>
+                </div>
+                <div class="progress-text">Step 2 of 3</div>
+              </div>
+              <div class="hero-card-stats">
+                <div class="card-stat">
+                  <div class="card-stat-value">30s</div>
+                  <div class="card-stat-label">Avg Time</div>
+                </div>
+                <div class="card-stat-divider"></div>
+                <div class="card-stat">
+                  <div class="card-stat-value">100+</div>
+                  <div class="card-stat-label">Reports</div>
+                </div>
+              </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-          <div class="location-row">
+    <!-- Main Content -->
+    <main class="main-container">
+      <!-- Report Form Section -->
+      <section class="report-section">
+        <div class="section-header">
+          <div class="section-icon-wrapper">
+            <svg class="section-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 3c0 1-1 3-3 3S6 4 6 3s1-3 3-3 3 1 3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 21c0-1 1-3 3-3s3 1 3 3-1 3-3 3-3-1-3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="section-title">Submit Wait Time Report</h2>
+            <p class="section-subtitle">Fill in your clinic visit details to help others</p>
+          </div>
+        </div>
+        
+        <div class="form-container">
+          <form id="checkin-form" class="medical-form">
+            <div class="form-section">
+              <div class="form-section-header">
+                <span class="form-section-number">01</span>
+                <h3>Clinic Information</h3>
+      </div>
+              <div class="form-group">
+                <label class="form-label required" for="clinic_name">
+                  <span class="label-icon-wrapper">
+                    <svg class="label-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <polyline points="17 21 17 13 7 13 7 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <polyline points="7 3 7 8 15 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                  Clinic Name
+                </label>
+                <input
+                  type="text"
+                  id="clinic_name"
+                  name="clinic_name"
+                  class="form-input"
+                  placeholder="e.g., Downtown Medical Center"
+                  required
+                  minlength="1"
+                />
+      </div>
+    </div>
+
+            <div class="form-section">
+              <div class="form-section-header">
+                <span class="form-section-number">02</span>
+                <h3>Visit Times</h3>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label required" for="check_in_time">
+                    <span class="label-icon-wrapper">
+                      <svg class="label-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                        <polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                    Check-in Time
+                  </label>
+                  <input
+                    type="datetime-local"
+                    id="check_in_time"
+                    name="check_in_time"
+                    class="form-input"
+                    required
+                  />
+        </div>
+
+                <div class="form-group">
+                  <label class="form-label required" for="check_out_time">
+                    <span class="label-icon-wrapper">
+                      <svg class="label-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                    Check-out Time
+          </label>
+              <input
+                    type="datetime-local"
+                    id="check_out_time"
+                    name="check_out_time"
+                    class="form-input"
+                required
+              />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-header">
+                <span class="form-section-number">03</span>
+                <h3>Clinic Condition</h3>
+              </div>
+              <div class="form-group">
+                <label class="form-label required" for="condition">
+                  <span class="label-icon-wrapper">
+                    <svg class="label-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <line x1="18" y1="20" x2="18" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      <line x1="12" y1="20" x2="12" y2="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      <line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                  </span>
+                  How was the clinic?
+                </label>
+                <div class="condition-selector">
+                  <label class="condition-option">
+                    <input type="radio" name="condition" value="Smooth" required />
+                    <div class="condition-card">
+                      <div class="condition-icon-circle green">
+                        <div class="condition-icon-inner"></div>
+                      </div>
+                      <div class="condition-title">Smooth</div>
+                      <div class="condition-desc">Quick service, minimal wait</div>
+                    </div>
+                  </label>
+                  <label class="condition-option">
+                    <input type="radio" name="condition" value="Busy" required />
+                    <div class="condition-card">
+                      <div class="condition-icon-circle yellow">
+                        <div class="condition-icon-inner"></div>
+                      </div>
+                      <div class="condition-title">Busy</div>
+                      <div class="condition-desc">Moderate wait, normal flow</div>
+                    </div>
+                  </label>
+                  <label class="condition-option">
+                    <input type="radio" name="condition" value="Overloaded" required />
+                    <div class="condition-card">
+                      <div class="condition-icon-circle red">
+                        <div class="condition-icon-inner"></div>
+                      </div>
+                      <div class="condition-title">Overloaded</div>
+                      <div class="condition-desc">Long wait, crowded</div>
+                    </div>
+          </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-header">
+                <span class="form-section-number">04</span>
+                <h3>Location</h3>
+              </div>
+              <div class="form-group">
             <input type="hidden" name="latitude" id="latitude" />
             <input type="hidden" name="longitude" id="longitude" />
-            <p id="location-display" class="location-display">
-              Waiting for location permission…
-            </p>
+                <div id="location-display" class="location-display">
+                  <div class="location-icon-wrapper">
+                    <svg class="location-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2"/>
+                      <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                  </div>
+                  <div class="location-text">Waiting for location permission…</div>
+                </div>
+                <button type="button" id="locate-btn" class="btn btn-secondary location-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polyline points="23 4 23 10 17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="1 20 1 14 7 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>Refresh Location</span>
+                </button>
+              </div>
           </div>
 
-          <div class="action-row">
-            <button type="button" id="locate-btn" class="ghost">
-              Refresh location
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary submit-btn">
+                <span>Submit Report</span>
+                <span class="btn-arrow">→</span>
             </button>
-            <button type="submit">Submit report</button>
           </div>
         </form>
 
-        <div id="status" class="status-banner" role="status">
-          Share a description and photo to get started.
+          <div id="status" class="status-message info" role="status" style="display: block;">
+            <div class="status-icon-wrapper">
+              <svg class="status-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <line x1="12" y1="16" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="12" y1="8" x2="12.01" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="status-text">Fill in the form above to submit a clinic wait time report.</div>
         </div>
 
-        <div class="submit-progress" id="submit-progress" role="progressbar" aria-hidden="true" hidden>
-          <span class="submit-progress-bar"></span>
+          <div id="submit-progress" style="display: none; margin-top: 1rem;">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 100%;"></div>
+            </div>
         </div>
-
-        <div class="card-footer">
-          <p class="hint">
-            Location capture uses the browser's Geolocation API. It requires
-            HTTPS (or localhost) and explicit permission from the user.
-          </p>
-          <p class="hint">
-            Want to supercharge adoption? Embed this form in community portals
-            or campus kiosks in minutes.
-          </p>
         </div>
       </section>
 
-      <section class="card intel-card">
-        <div class="card-header">
-          <span class="eyebrow subtle">Trust pipeline</span>
-          <h2>Human intent, machine-verified</h2>
-          <p>
-            Each submission flows through a transparent verification stack so
-            cities can act instantly.
-          </p>
+      <!-- How It Works Section -->
+      <section class="how-it-works-section">
+        <div class="section-header">
+          <div class="section-icon-wrapper">
+            <svg class="section-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M19.07 4.93l-4.24 4.24m0 5.66l4.24 4.24M4.93 19.07l4.24-4.24m0-5.66L4.93 4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">AI-powered wait time prediction system</p>
+          </div>
         </div>
 
-        <ol class="timeline">
-          <li>
-            <span class="timeline-index">01</span>
-            <div>
-              <h3>Capture &amp; geotag</h3>
-              <p>
-                Browser locks your coordinates and packages imagery with metadata
-                inside a signed payload.
-              </p>
+        <div class="timeline-container">
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-icon">1</div>
             </div>
-          </li>
-          <li>
-            <span class="timeline-index">02</span>
-            <div>
-              <h3>Rekognition insights</h3>
-              <p>
-                AWS checks for ramps, signage, elevators, and tactile cues with
-                tuned confidence thresholds.
-              </p>
+            <div class="timeline-content">
+              <h3>Report Wait Time</h3>
+              <p>Submit your check-in and check-out times along with the clinic condition (Smooth, Busy, or Overloaded).</p>
             </div>
-          </li>
-          <li>
-            <span class="timeline-index">03</span>
-            <div>
-              <h3>GPT audit</h3>
-              <p>
-                LLM compares human narrative with machine vision to flag
-                mismatches or boost trust signals.
-              </p>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-icon">2</div>
             </div>
-          </li>
-          <li>
-            <span class="timeline-index">04</span>
-            <div>
-              <h3>Map broadcast</h3>
-              <p>
-                Verified data emits to the public map, powering dashboards,
-                exports, and policy interventions.
-              </p>
+            <div class="timeline-content">
+              <h3>AI Processes Data</h3>
+              <p>Our machine learning model aggregates wait times per clinic and calculates average wait times, reliability scores, and current conditions.</p>
             </div>
-          </li>
-        </ol>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-icon">3</div>
+            </div>
+            <div class="timeline-content">
+              <h3>Model Learns</h3>
+              <p>The reinforcement learning model updates its predictions using a reward function that penalizes inaccurate predictions and improves over time.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-icon">4</div>
+            </div>
+            <div class="timeline-content">
+              <h3>Predict & Display</h3>
+              <p>Predictions are shown on the interactive map with color-coded pins. Patients can find the shortest wait nearby sorted by predicted wait time.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-        <div class="metric-grid">
-          <div class="metric-card">
-            <span class="metric-label">Live map nodes</span>
-            <span class="metric-value" data-stat="reports-count">--</span>
-            <span class="metric-trend up">Real-time</span>
+      <!-- Stats Grid Section -->
+      <section class="stats-section">
+        <div class="section-header">
+          <div class="section-icon-wrapper">
+            <svg class="section-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
-          <div class="metric-card">
-            <span class="metric-label">Avg. GPT agreement</span>
-            <span class="metric-value" data-stat="avg-confidence">--</span>
-            <span class="metric-trend neutral">Rolling avg</span>
+        <div>
+            <h2 class="section-title">Live Statistics</h2>
+            <p class="section-subtitle">Real-time data from our community</p>
           </div>
-          <div class="metric-card">
-            <span class="metric-label">High-priority alerts</span>
-            <span class="metric-value" data-stat="mismatch-count">--</span>
-            <span class="metric-trend warn">AI review queue</span>
+        </div>
+        
+        <div class="medical-stats">
+          <div class="medical-stat stat-large">
+            <div class="stat-icon-wrapper">
+              <svg class="stat-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="17 21 17 13 7 13 7 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="7 3 7 8 15 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="medical-stat-label">Active Clinics</div>
+            <div class="medical-stat-value" data-stat="clinics-count">--</div>
+            <div class="medical-stat-description">Being tracked in real-time</div>
+          </div>
+          <div class="medical-stat stat-large">
+            <div class="stat-icon-wrapper">
+              <svg class="stat-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="medical-stat-label">Average Wait</div>
+            <div class="medical-stat-value" data-stat="avg-wait-time">--</div>
+            <div class="medical-stat-description">Minutes across all clinics</div>
+          </div>
+          <div class="medical-stat stat-large">
+            <div class="stat-icon-wrapper">
+              <svg class="stat-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <line x1="18" y1="20" x2="18" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="12" y1="20" x2="12" y2="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="medical-stat-label">Total Reports</div>
+            <div class="medical-stat-value" data-stat="reports-count">--</div>
+            <div class="medical-stat-description">Community contributions</div>
+        </div>
+      </div>
+    </section>
+
+      <!-- Features Section -->
+      <section class="features-section">
+        <div class="section-header">
+          <div class="section-icon-wrapper">
+            <svg class="section-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="section-title">Features</h2>
+            <p class="section-subtitle">Why choose CareNow</p>
+          </div>
+      </div>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <svg class="feature-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 17l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>AI-Powered</h3>
+            <p>Machine learning models predict wait times with increasing accuracy</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <svg class="feature-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2"/>
+                <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <h3>Interactive Map</h3>
+            <p>Visualize clinic locations and wait times on an interactive map</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <svg class="feature-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="17 6 23 6 23 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>Real-Time</h3>
+            <p>Live updates from the community keep data fresh and accurate</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <svg class="feature-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>Community-Driven</h3>
+            <p>Crowdsourced data improves predictions for everyone</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <svg class="feature-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                <line x1="12" y1="18" x2="12.01" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Easy to Use</h3>
+            <p>Simple interface makes reporting quick and effortless</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <svg class="feature-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <circle cx="12" cy="12" r="6" stroke="currentColor" stroke-width="2"/>
+                <circle cx="12" cy="12" r="2" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <h3>Accurate</h3>
+            <p>Reliability scores help you trust the data you're seeing</p>
           </div>
         </div>
       </section>
     </main>
 
-    <section class="card secondary map-teaser shell">
-      <div class="map-teaser-grid">
-        <div>
-          <span class="eyebrow accent">Live intelligence layer</span>
-          <h2>Explore the interactive accessibility atlas</h2>
-          <p>
-            Filter by confidence, pivot to neighborhoods, and stream GeoJSON for
-            municipal dashboards or digital twins.
-          </p>
-          <a class="link-button primary" href="/map">Launch the map</a>
-        </div>
-        <div class="teaser-visual">
-          <div class="teaser-map">
-            <span class="teaser-pulse"></span>
-            <span class="teaser-pulse delay"></span>
-            <div class="teaser-tooltip">
-              <strong>Elevator signage • 95%</strong>
-              <small>Downtown transit hub</small>
-            </div>
-            <div class="teaser-tooltip ghost">
-              <strong>Ramp compliance • 82%</strong>
-              <small>Community center</small>
-            </div>
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <div class="brand-mark">
+            <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="32" cy="32" r="20" fill="rgba(13, 71, 161, 0.1)" stroke="rgba(13, 71, 161, 0.3)" stroke-width="1"/>
+              <rect x="29" y="18" width="6" height="28" rx="3" fill="#0d47a1"/>
+              <rect x="18" y="29" width="28" height="6" rx="3" fill="#0d47a1"/>
+              <line x1="32" y1="32" x2="40" y2="32" stroke="#1976d2" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="32" y1="32" x2="32" y2="22" stroke="#1976d2" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="32" cy="32" r="2.5" fill="#1976d2"/>
+            </svg>
+          </div>
+          <div class="footer-brand-text">
+            <span class="footer-brand-name">CareNow</span>
+            <span class="footer-brand-tagline">Wait Time Intelligence</span>
           </div>
         </div>
-      </div>
-    </section>
-
-    <section id="team" class="card team card-wide shell">
-      <div class="team-header">
-        <span class="eyebrow subtle">Builders behind the platform</span>
-        <h2>Meet the AccessibilityPlus developers</h2>
-        <p>
-          We paired on every layer of the stack, trading commits and design notes daily to keep our AWS + AI pipeline sharp and accessible.
-        </p>
-      </div>
-
-      <div class="team-gallery">
-        <button class="team-nav prev" type="button" aria-label="Scroll team backward" data-team-prev>
-          <span aria-hidden="true">&lsaquo;</span>
-        </button>
-
-        <div class="team-track" data-team-track>
-          <article class="team-member" style="--accent: #38bdf8">
-            <div class="team-photo">
-              <span class="team-photo-glow" aria-hidden="true"></span>
-              <img src="/static/img/team/reyansh-badhwar.jpg" alt="Portrait of Reyansh Badhwar" loading="lazy" />
-            </div>
-            <span class="team-badge">ML &amp; Cloud</span>
-            <h3>Reyansh Badhwar</h3>
-            <p class="team-role">Developer · ML &amp; Cloud</p>
-            <p class="team-summary">
-              Co-led the Rekognition modeling, AWS deployment mesh, and cross-stack integrations that keep the live map immediate and trustworthy.
-            </p>
-            <ul class="team-meta">
-              <li>Amazon Rekognition tuning</li>
-              <li>AWS architecture &amp; deployment</li>
-              <li>End-to-end integrations</li>
-            </ul>
-          </article>
-
-          <article class="team-member" style="--accent: #f97316">
-            <div class="team-photo">
-              <span class="team-photo-glow" aria-hidden="true"></span>
-              <img src="/static/img/team/zehaan-walji.jpg" alt="Portrait of Zehaan Walji" loading="lazy" />
-            </div>
-            <span class="team-badge">Vision &amp; UX</span>
-            <h3>Zehaan Walji</h3>
-            <p class="team-role">Developer · Vision &amp; Experience</p>
-            <p class="team-summary">
-              Paired on Rekognition experimentation, interface systems, and orchestration so every interaction feels cinematic yet fast enough for field work.
-            </p>
-            <ul class="team-meta">
-              <li>Rekognition modeling</li>
-              <li>Interface &amp; journey design</li>
-              <li>Product orchestration</li>
-            </ul>
-          </article>
-
-          <article class="team-member" style="--accent: #22d3ee">
-            <div class="team-photo">
-              <span class="team-photo-glow" aria-hidden="true"></span>
-              <img src="/static/img/team/divakar-gaba.jpg" alt="Portrait of Divakar Gaba" loading="lazy" />
-            </div>
-            <span class="team-badge">Cloud Ops</span>
-            <h3>Divakar Gaba</h3>
-            <p class="team-role">Developer · Cloud &amp; Reliability</p>
-            <p class="team-summary">
-              Architected the AWS backbone, codified deployment safety nets, and stress-tested the trust layer so the platform stays resilient under load.
-            </p>
-            <ul class="team-meta">
-              <li>AWS infrastructure automation</li>
-              <li>Data trust &amp; resilience</li>
-              <li>Developer experience</li>
-            </ul>
-          </article>
-
-          <article class="team-member" style="--accent: #a855f7">
-            <div class="team-photo">
-              <span class="team-photo-glow" aria-hidden="true"></span>
-              <img src="/static/img/team/abdullah-warraich.jpg?v=2" alt="Portrait of Abdullah Warraich" loading="lazy" />
-            </div>
-            <span class="team-badge">UI Systems</span>
-            <h3>Abdullah Warraich</h3>
-            <p class="team-role">Developer · UI Systems</p>
-            <p class="team-summary">
-              Co-designed the UI with Zehaan and Rafay, elevating motion, accessibility, and polish while reviewing every flow for inclusive clarity.
-            </p>
-            <ul class="team-meta">
-              <li>Interface architecture</li>
-              <li>Motion &amp; interaction design</li>
-              <li>Accessibility QA</li>
-            </ul>
-          </article>
-
-          <article class="team-member" style="--accent: #facc15">
-            <div class="team-photo">
-              <span class="team-photo-glow" aria-hidden="true"></span>
-              <img src="/static/img/team/rafay-kamran.jpg" alt="Portrait of Rafay Kamran" loading="lazy" />
-            </div>
-            <span class="team-badge">Story &amp; UI</span>
-            <h3>Rafay Kamran</h3>
-            <p class="team-role">Developer · UI &amp; Storytelling</p>
-            <p class="team-summary">
-              Built the narrative visuals with Abdullah and Zehaan, pairing on full-stack flows and pressure-testing each release for an emotive, clear story.
-            </p>
-            <ul class="team-meta">
-              <li>Visual storytelling</li>
-              <li>UI buildouts</li>
-              <li>Experience QA</li>
-            </ul>
-          </article>
+        <div class="footer-links">
+          <a href="/">Report</a>
+          <a href="/map">Map</a>
         </div>
-
-        <button class="team-nav next" type="button" aria-label="Scroll team forward" data-team-next>
-          <span aria-hidden="true">&rsaquo;</span>
-        </button>
       </div>
-
-      <footer class="team-footer">
-        <p>
-          Every developer contributed code, design critiques, and QA across the entire stack—no silos, just a shared obsession with accessible cities.
-        </p>
+      <div class="footer-bottom">
+        <p>&copy; 2025 CareNow. Helping patients find the shortest wait times.</p>
+      </div>
       </footer>
-    </section>
   </body>
 </html>

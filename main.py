@@ -2,7 +2,6 @@ import os
 import json
 import uuid
 import boto3
-from openai import OpenAI
 from dotenv import load_dotenv
 from datetime import datetime
 
@@ -100,7 +99,7 @@ def upload_to_s3(image_bytes, labels, gpt_data, location, feature_name, descript
         Metadata=metadata
     )
 
-    print("\n✅ Uploaded to S3 with metadata:")
+    print("\nUploaded to S3 with metadata:")
     print("s3://", bucket_name, "/", key, sep="")
     print(json.dumps(metadata, indent=2))
 
@@ -116,7 +115,7 @@ if __name__ == "__main__":
     image_path = input("> ")
 
     if not os.path.exists(image_path):
-        print(f"❌ ERROR: File '{image_path}' not found.")
+        print(f"ERROR: File '{image_path}' not found.")
         exit(1)
 
     print("Enter location name (for now just text):")
@@ -128,7 +127,7 @@ if __name__ == "__main__":
     print("Enter short description:")
     description = input("> ")
 
-    print("\n🔄 Loading image...")
+    print("\nLoading image...")
     image_bytes = load_image(image_path)
 
     print("🔍 Running Rekognition...")

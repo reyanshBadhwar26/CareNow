@@ -1,54 +1,58 @@
 const metricsTargetsPresent = document.querySelector("[data-stat]") || document.querySelector("[data-progress]");
 
 if (metricsTargetsPresent) {
-  fetch("/reports")
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Unable to load metrics");
-      }
-      return response.json();
-    })
-    .then((reports) => {
-      const stats = computeMetrics(Array.isArray(reports) ? reports : []);
+  // Load check-ins and clinics
+  Promise.all([
+    fetch("/checkins")
+      .then((response) => {
+        if (!response.ok) throw new Error("Unable to load check-ins");
+        return response.json();
+      })
+      .catch(() => []),
+    fetch("/clinics")
+      .then((response) => {
+        if (!response.ok) throw new Error("Unable to load clinics");
+        return response.json();
+      })
+      .catch(() => []),
+  ])
+    .then(([checkins, clinics]) => {
+      const stats = computeMetrics(
+        Array.isArray(checkins) ? checkins : [],
+        Array.isArray(clinics) ? clinics : []
+      );
       applyMetrics(stats);
     })
     .catch((error) => {
-      console.warn(error);
+      console.warn("Error loading metrics:", error);
     });
 }
 
-function computeMetrics(reports) {
+function computeMetrics(checkins, clinics) {
   const now = Date.now();
   const DAY = 24 * 60 * 60 * 1000;
   const stats = {
-    totalReports: reports.length,
-    sumConfidence: 0,
-    confidenceCount: 0,
-    highConfidenceCount: 0,
+    totalCheckins: checkins.length,
+    totalClinics: clinics.length,
+    sumWaitTime: 0,
+    waitTimeCount: 0,
     last24h: 0,
     last7d: 0,
-    mismatchCount: 0,
-    latestReportDate: null,
+    latestCheckinDate: null,
   };
 
-  for (const report of reports) {
-    const createdAt = report?.created_at ? new Date(report.created_at) : null;
-    const confidence = Number.parseFloat(report?.ai_verdict?.confidence);
-    const mismatches = Array.isArray(report?.ai_verdict?.mismatches)
-      ? report.ai_verdict.mismatches
-      : [];
+  for (const checkin of checkins) {
+    const waitTime = Number.parseFloat(checkin?.wait_time);
+    const createdAt = checkin?.created_at ? new Date(checkin.created_at) : null;
 
-    if (Number.isFinite(confidence)) {
-      stats.sumConfidence += confidence;
-      stats.confidenceCount += 1;
-      if (confidence >= 80) {
-        stats.highConfidenceCount += 1;
-      }
+    if (Number.isFinite(waitTime) && waitTime > 0) {
+      stats.sumWaitTime += waitTime;
+      stats.waitTimeCount += 1;
     }
 
     if (createdAt && !Number.isNaN(createdAt.getTime())) {
-      if (!stats.latestReportDate || createdAt > stats.latestReportDate) {
-        stats.latestReportDate = createdAt;
+      if (!stats.latestCheckinDate || createdAt > stats.latestCheckinDate) {
+        stats.latestCheckinDate = createdAt;
       }
 
       const diff = now - createdAt.getTime();
@@ -59,41 +63,48 @@ function computeMetrics(reports) {
         stats.last7d += 1;
       }
     }
+  }
 
-    if (mismatches.length > 0) {
-      stats.mismatchCount += 1;
+  // Calculate average wait time
+  stats.avgWaitTime = stats.waitTimeCount
+    ? stats.sumWaitTime / stats.waitTimeCount
+    : null;
+
+  // Calculate average wait time from clinics (more accurate)
+  let clinicWaitSum = 0;
+  let clinicWaitCount = 0;
+  for (const clinic of clinics) {
+    const avgWait = clinic?.average_wait_time;
+    if (Number.isFinite(avgWait) && avgWait > 0) {
+      clinicWaitSum += avgWait;
+      clinicWaitCount += 1;
     }
   }
 
-  stats.avgConfidence = stats.confidenceCount
-    ? stats.sumConfidence / stats.confidenceCount
-    : null;
-
-  stats.highConfidenceShare = stats.confidenceCount
-    ? (stats.highConfidenceCount / stats.confidenceCount) * 100
-    : null;
+  if (clinicWaitCount > 0) {
+    stats.avgWaitTime = clinicWaitSum / clinicWaitCount;
+  }
 
   return stats;
 }
 
 function applyMetrics(stats) {
-  setStatText("reports-count", formatNumber(stats.totalReports));
-  setStatText("avg-confidence", formatPercent(stats.avgConfidence));
+  setStatText("reports-count", formatNumber(stats.totalCheckins));
+  setStatText("clinics-count", formatNumber(stats.totalClinics));
+  setStatText("avg-wait-time", formatWaitTime(stats.avgWaitTime));
   setStatText("reports-24h", formatNumber(stats.last24h));
 
-  const lastUpdated = formatRelative(stats.latestReportDate);
+  const lastUpdated = formatRelative(stats.latestCheckinDate);
   setStatText("last-updated", lastUpdated.display, { title: lastUpdated.title });
 
-  setStatText("mismatch-count", formatNumber(stats.mismatchCount));
-  setStatText("high-confidence-share", formatPercent(stats.highConfidenceShare));
-
-  const avgProgress = Number.isFinite(stats.avgConfidence)
-    ? clamp(stats.avgConfidence / 100, 0, 1)
+  // Set progress bars
+  const avgWaitProgress = Number.isFinite(stats.avgWaitTime)
+    ? clamp(stats.avgWaitTime / 120, 0, 1) * 100 // Normalize to 120 minutes max, convert to percentage
     : 0;
-  setProgress("avg-confidence", avgProgress);
+  setProgress("avg-wait-progress", avgWaitProgress);
 
   const freshRatio =
-    stats.totalReports > 0 ? clamp(stats.last24h / stats.totalReports, 0, 1) : 0;
+    stats.totalCheckins > 0 ? clamp(stats.last24h / stats.totalCheckins, 0, 1) * 100 : 0;
   setProgress("reports-24h-ratio", freshRatio);
 }
 
@@ -112,11 +123,11 @@ function setStatText(statName, value, options = {}) {
   }
 }
 
-function setProgress(statName, ratio) {
+function setProgress(statName, percentage) {
   document
     .querySelectorAll(`[data-progress="${statName}"]`)
     .forEach((element) => {
-      element.style.setProperty("--progress", ratio);
+      element.style.width = `${percentage}%`;
     });
 }
 
@@ -125,6 +136,13 @@ function formatNumber(value) {
     return "0";
   }
   return Number(value).toLocaleString();
+}
+
+function formatWaitTime(value) {
+  if (!Number.isFinite(Number(value))) {
+    return "—";
+  }
+  return `${Math.round(value)} min`;
 }
 
 function formatPercent(value) {
@@ -166,4 +184,3 @@ function formatRelative(date) {
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
-

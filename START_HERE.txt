@@ -1,0 +1,43 @@
+========================================
+  CareNow Server - Quick Start Guide
+========================================
+
+The server is NOT currently running.
+
+To start the server, run ONE of these commands:
+
+1. Using the simple runner (RECOMMENDED):
+   python3 run_server.py
+
+2. Using the startup script:
+   ./start.sh
+
+3. Direct start:
+   source venv/bin/activate
+   python3 server.py
+
+After starting, you should see:
+  INFO:     Uvicorn running on http://0.0.0.0:8000
+
+Then open your browser to:
+  http://localhost:8000
+
+Or test with curl:
+  curl http://localhost:8000/
+
+========================================
+Troubleshooting:
+========================================
+
+If you get "Address already in use":
+  lsof -ti:8000 | xargs kill -9
+
+If you get "ModuleNotFoundError":
+  source venv/bin/activate
+  pip install -r requirements.txt
+
+If you get "Permission denied":
+  chmod +x start.sh
+  chmod +x run_server.py
+
+========================================

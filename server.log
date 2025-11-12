@@ -1,0 +1,119 @@
+INFO:     Will watch for changes in these directories: ['/Users/zehaanwalji/VSCodeProjects/CareNow']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [14520] using StatReload
+INFO:     Started server process [14523]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+Using local file storage in /Users/zehaanwalji/VSCodeProjects/CareNow/data
+INFO:     127.0.0.1:51128 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51132 - "GET /clinics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51156 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51167 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51173 - "GET /map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51179 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51181 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51191 - "GET /clinics/geojson HTTP/1.1" 200 OK
+WARNING:  StatReload detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [14523]
+INFO:     Started server process [14729]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+Using local file storage in /Users/zehaanwalji/VSCodeProjects/CareNow/data
+INFO:     127.0.0.1:51264 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51264 - "GET /static/css/styles.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51264 - "GET /static/js/report.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:51266 - "GET /static/js/metrics.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:51266 - "GET /checkins HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51264 - "GET /clinics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51264 - "GET /static/img/favicon.svg HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:51273 - "GET /map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51273 - "GET /static/css/map.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:51275 - "GET /static/js/map.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:51275 - "GET /checkins HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51273 - "GET /clinics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51273 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51281 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51281 - "GET /checkins HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51283 - "GET /clinics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51286 - "GET /map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51286 - "GET /checkins HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51288 - "GET /clinics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51288 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51298 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51405 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51556 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51716 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51858 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51996 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52074 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52074 - "GET /static/css/styles.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52076 - "GET /static/js/report.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:52076 - "GET /checkins HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52074 - "GET /clinics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52132 - "GET /map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52134 - "GET /static/css/map.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:52132 - "GET /static/css/styles.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:52136 - "GET /static/js/map.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52136 - "GET /checkins HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52132 - "GET /clinics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52132 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52150 - "GET /static/css/styles.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:52150 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:52228 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52375 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52535 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52704 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52789 - "GET /map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52789 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:52789 - "GET /static/js/map.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52790 - "GET /static/css/styles.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:52789 - "GET /checkins HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52790 - "GET /clinics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52790 - "GET /static/img/favicon.svg HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:52790 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52792 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52792 - "GET /static/css/styles.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:52792 - "GET /checkins HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52891 - "GET /clinics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53001 - "GET /map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53001 - "GET /static/css/styles.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53003 - "GET /static/css/map.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53005 - "GET /static/js/map.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53005 - "GET /checkins HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53003 - "GET /clinics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53003 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53191 - "GET /map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53191 - "GET /static/css/styles.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53192 - "GET /static/css/map.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53191 - "GET /static/js/metrics.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53194 - "GET /static/js/map.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53194 - "GET /checkins HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53191 - "GET /clinics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53191 - "GET /static/img/favicon.svg HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53191 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53197 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53197 - "GET /static/js/report.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53197 - "GET /checkins HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53199 - "GET /clinics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53209 - "GET /map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53209 - "GET /static/css/styles.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53211 - "GET /static/css/map.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53209 - "GET /static/js/map.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53209 - "GET /checkins HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53211 - "GET /clinics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53211 - "GET /clinics/geojson HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53215 - "GET /clinics/nearby?latitude=51.134298303159824&longitude=-113.93123536555994&radius_km=10&limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53217 - "GET /clinics/nearby?latitude=51.134298303159824&longitude=-113.93123536555994&radius_km=10&limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53219 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53219 - "GET /checkins HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53221 - "GET /clinics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53227 - "GET /map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53227 - "GET /static/css/styles.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53229 - "GET /static/css/map.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53229 - "GET /static/js/map.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53229 - "GET /checkins HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53227 - "GET /clinics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53227 - "GET /clinics/geojson HTTP/1.1" 200 OK

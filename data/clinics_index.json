@@ -1,0 +1,30 @@
+{
+  "saddletown_clinic": {
+    "clinic_id": "saddletown_clinic",
+    "clinic_name": "Saddletown Clinic",
+    "location": {
+      "latitude": 51.134431,
+      "longitude": -113.93125
+    },
+    "average_wait_time": 360.0,
+    "current_condition": "Busy",
+    "reliability_score": 18,
+    "total_reports": 2,
+    "recent_reports": 2,
+    "last_updated": "2025-11-12T09:25:11.687834+00:00"
+  },
+  "test_clinic": {
+    "clinic_id": "test_clinic",
+    "clinic_name": "Test Clinic",
+    "location": {
+      "latitude": 51.134431,
+      "longitude": -113.93125
+    },
+    "average_wait_time": 169.0,
+    "current_condition": "Overloaded",
+    "reliability_score": 9,
+    "total_reports": 1,
+    "recent_reports": 1,
+    "last_updated": "2025-11-12T09:25:11.687852+00:00"
+  }
+}
