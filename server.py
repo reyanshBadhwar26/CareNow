@@ -56,56 +56,143 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Wait time prediction model (simple Q-learning based)
 class WaitTimePredictor:
-    def __init__(self, learning_rate=0.1, discount_factor=0.95):
-        self.learning_rate = learning_rate
-        self.discount_factor = discount_factor
-        # Q-table: (hour_of_day, day_of_week, condition) -> predicted_wait_time
-        self.q_table = defaultdict(lambda: 30.0)  # Default 30 minutes
-        self.condition_map = {"Smooth": 0, "Busy": 1, "Overloaded": 2}
-        self.reverse_condition_map = {0: "Smooth", 1: "Busy", 2: "Overloaded"}
+    """Per-clinic wait-time predictor using incremental statistics."""
 
-    def _get_state(self, hour: int, weekday: int, condition: str) -> Tuple[int, int, int]:
-        """Convert features to state tuple"""
-        condition_code = self.condition_map.get(condition, 1)
-        return (hour % 24, weekday % 7, condition_code)
+    def __init__(
+        self,
+        min_hourly_samples: int = 1,
+        min_weekday_samples: int = 1,
+        default_wait: float = 30.0,
+    ):
+        self.min_hourly_samples = min_hourly_samples
+        self.min_weekday_samples = min_weekday_samples
+        self.default_wait = default_wait
+        self.clinic_stats: Dict[str, Dict[str, Any]] = {}
+        self.global_stats: Dict[str, float] = {"total": 0.0, "count": 0}
 
-    def predict(self, hour: int, weekday: int, recent_condition: str = "Busy") -> float:
-        """Predict wait time for next hour"""
-        state = self._get_state(hour, weekday, recent_condition)
-        return self.q_table[state]
+    @staticmethod
+    def _avg_entry(entry: Optional[Dict[str, float]]) -> Optional[float]:
+        if not entry:
+            return None
+        count = entry.get("count", 0)
+        if count <= 0:
+            return None
+        return entry.get("total", 0.0) / count
 
-    def update(self, hour: int, weekday: int, condition: str, actual_wait_time: float, predicted_wait_time: float):
-        """Update Q-table using reward function"""
-        state = self._get_state(hour, weekday, condition)
-        
-        # Reward: negative of prediction error
-        error = abs(actual_wait_time - predicted_wait_time)
-        reward = -error
-        
-        # Simple Q-learning update
-        current_q = self.q_table[state]
-        # Update towards actual wait time with learning rate
-        self.q_table[state] = current_q + self.learning_rate * (actual_wait_time - current_q)
+    @staticmethod
+    def _update_entry(bucket: Dict[str, Dict[str, float]], key: str, value: float) -> None:
+        entry = bucket.setdefault(key, {"total": 0.0, "count": 0})
+        entry["total"] += value
+        entry["count"] += 1
+
+    @staticmethod
+    def _init_clinic_stats() -> Dict[str, Any]:
+        return {
+            "overall": {"total": 0.0, "count": 0},
+            "hourly": {},
+            "weekday": {},
+            "condition": {},
+        }
+
+    def predict(
+        self,
+        clinic_id: Optional[str],
+        hour: int,
+        weekday: int,
+        recent_condition: str = "Moderate",
+        fallback_wait: Optional[float] = None,
+    ) -> float:
+        fallback = fallback_wait if fallback_wait is not None else self.default_wait
+        if not clinic_id:
+            return fallback
+
+        stats = self.clinic_stats.get(clinic_id)
+        if not stats:
+            return fallback
+
+        hour_key = str(hour % 24)
+        weekday_key = str(weekday % 7)
+        condition_key = (recent_condition or "Unknown").strip()
+
+        hour_entry = stats["hourly"].get(hour_key)
+        if hour_entry and hour_entry.get("count", 0) >= self.min_hourly_samples:
+            avg = self._avg_entry(hour_entry)
+            if avg is not None:
+                return avg
+
+        weekday_entry = stats["weekday"].get(weekday_key)
+        if weekday_entry and weekday_entry.get("count", 0) >= self.min_weekday_samples:
+            avg = self._avg_entry(weekday_entry)
+            if avg is not None:
+                return avg
+
+        condition_entry = stats["condition"].get(condition_key)
+        if condition_entry and condition_entry.get("count", 0) >= 2:
+            avg = self._avg_entry(condition_entry)
+            if avg is not None:
+                return avg
+
+        overall_avg = self._avg_entry(stats["overall"])
+        return overall_avg if overall_avg is not None else fallback
+
+    def update(
+        self,
+        clinic_id: Optional[str],
+        hour: int,
+        weekday: int,
+        condition: str,
+        actual_wait_time: float,
+        predicted_wait_time: Optional[float] = None,
+    ) -> None:
+        # Keep signature compatible with previous caller; predicted_wait_time unused.
+        self.global_stats["total"] += actual_wait_time
+        self.global_stats["count"] += 1
+
+        if not clinic_id:
+            return
+
+        stats = self.clinic_stats.setdefault(clinic_id, self._init_clinic_stats())
+        stats["overall"]["total"] += actual_wait_time
+        stats["overall"]["count"] += 1
+
+        hour_key = str(hour % 24)
+        weekday_key = str(weekday % 7)
+        condition_key = (condition or "Unknown").strip()
+
+        self._update_entry(stats["hourly"], hour_key, actual_wait_time)
+        self._update_entry(stats["weekday"], weekday_key, actual_wait_time)
+        self._update_entry(stats["condition"], condition_key, actual_wait_time)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Serialize model to dict"""
         return {
-            "q_table": dict(self.q_table),
-            "learning_rate": self.learning_rate,
-            "discount_factor": self.discount_factor,
-            "condition_map": self.condition_map,
+            "clinic_stats": self.clinic_stats,
+            "global_stats": self.global_stats,
+            "default_wait": self.default_wait,
+            "min_hourly_samples": self.min_hourly_samples,
+            "min_weekday_samples": self.min_weekday_samples,
         }
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "WaitTimePredictor":
-        """Deserialize model from dict"""
+        data = data or {}
         model = cls(
-            learning_rate=data.get("learning_rate", 0.1),
-            discount_factor=data.get("discount_factor", 0.95),
+            min_hourly_samples=data.get("min_hourly_samples", 1),
+            min_weekday_samples=data.get("min_weekday_samples", 1),
+            default_wait=data.get("default_wait", 30.0),
         )
-        model.q_table = defaultdict(lambda: 30.0, data.get("q_table", {}))
-        model.condition_map = data.get("condition_map", {"Smooth": 0, "Busy": 1, "Overloaded": 2})
-        model.reverse_condition_map = {v: k for k, v in model.condition_map.items()}
+        clinic_stats = data.get("clinic_stats")
+        if isinstance(clinic_stats, dict):
+            model.clinic_stats = clinic_stats
+        else:
+            model.clinic_stats = {}
+        global_stats = data.get("global_stats")
+        if isinstance(global_stats, dict):
+            model.global_stats = {
+                "total": float(global_stats.get("total", 0.0)),
+                "count": float(global_stats.get("count", 0.0)),
+            }
+        else:
+            model.global_stats = {"total": 0.0, "count": 0}
         return model
 
 
@@ -256,15 +343,56 @@ def _compute_wait_time(check_in: str, check_out: str) -> Optional[float]:
         return None
 
 
-def _calculate_reliability_score(num_reports: int, recency_days: int = 7) -> float:
-    """Calculate reliability score based on number of reports and recency"""
-    # Base score from number of reports (0-50 points)
-    base_score = min(50, num_reports * 2)
-    
-    # Recency bonus (0-50 points)
-    recency_bonus = min(50, recency_days * 7)
-    
-    return min(100, base_score + recency_bonus)
+def _calculate_reliability_score(num_reports: int, recent_reports: int) -> float:
+    """Reliability that trends high but avoids pegging at 100 too easily."""
+    if num_reports <= 0:
+        return 55.0
+
+    base_score = 55 + min(25, math.log1p(num_reports) * 12)
+    recency_boost = min(20, recent_reports * 4)
+    activity_bonus = 5 if recent_reports > 0 else 0
+
+    return float(min(97, base_score + recency_boost + activity_bonus))
+
+
+def _normalize_clinic_name(name: str) -> str:
+    """Normalize clinic name to a consistent identifier."""
+    return re.sub(r"[^a-z0-9]+", "_", name.lower().strip()).strip("_")
+
+
+def _location_bucket(lat: Optional[float], lon: Optional[float], bucket_deg: float = 0.1) -> Optional[Tuple[int, int]]:
+    """Bucket a latitude/longitude into ~10km grid cells (0.1 deg ~ 11km).
+
+    Returns a tuple (lat_bucket, lon_bucket) or None if lat/lon are missing.
+    """
+    try:
+        if lat is None or lon is None:
+            return None
+        lat_f = float(lat)
+        lon_f = float(lon)
+        # Floor division into grid cells
+        return (math.floor(lat_f / bucket_deg), math.floor(lon_f / bucket_deg))
+    except (TypeError, ValueError):
+        return None
+
+
+def _group_key_for_checkin(checkin: Dict[str, Any]) -> Optional[str]:
+    """Compute grouping key for aggregations using clinic name and coarse location bucket.
+
+    This prevents distant clinics with the same name (>~10km apart) from merging.
+    """
+    clinic_name = checkin.get("clinic_name")
+    if not clinic_name:
+        return None
+    norm = _normalize_clinic_name(clinic_name)
+    location = checkin.get("location") or {}
+    lat = location.get("latitude")
+    lon = location.get("longitude")
+    bucket = _location_bucket(lat, lon)
+    if bucket is None:
+        # Fallback: group by name only if no location is present
+        return norm
+    return f"{norm}__{bucket[0]}_{bucket[1]}"
 
 
 def _aggregate_clinic_data(clinic_id: str, checkins: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -323,7 +451,7 @@ def _aggregate_clinic_data_from_list(clinic_id: str, clinic_checkins: List[Dict[
         if condition:
             condition_counts[condition] += 1
     
-    current_condition = max(condition_counts.items(), key=lambda x: x[1])[0] if condition_counts else "Busy"
+    current_condition = max(condition_counts.items(), key=lambda x: x[1])[0] if condition_counts else "Moderate"
     
     # Reliability score
     reliability_score = _calculate_reliability_score(len(clinic_checkins), len(recent_checkins))
@@ -332,22 +460,29 @@ def _aggregate_clinic_data_from_list(clinic_id: str, clinic_checkins: List[Dict[
     # Sort check-ins by created_at to get most recent
     sorted_checkins = sorted(clinic_checkins, key=lambda x: x.get("created_at", ""), reverse=True)
     location = {}
-    if sorted_checkins and sorted_checkins[0].get("location"):
-        location = sorted_checkins[0].get("location", {})
+    latest_wait_time = None
+    if sorted_checkins:
+        most_recent = sorted_checkins[0]
+        if most_recent.get("location"):
+            location = most_recent.get("location", {})
+        latest_wait_time = most_recent.get("wait_time")
     elif locations:
         # Fallback to most recent location from locations list
         location = locations[-1]
-    
+
     # Get clinic info from first check-in (for name consistency)
     first_checkin = clinic_checkins[0]
     if not location:
         location = first_checkin.get("location", {})
+    if latest_wait_time is None and wait_times:
+        latest_wait_time = wait_times[-1]
     
     return {
         "clinic_id": clinic_id,
         "clinic_name": first_checkin.get("clinic_name", "Unknown Clinic"),
         "location": location,
         "average_wait_time": round(avg_wait_time, 1) if avg_wait_time else None,
+        "latest_wait_time": round(latest_wait_time, 1) if latest_wait_time else None,
         "current_condition": current_condition,
         "reliability_score": round(reliability_score, 1),
         "total_reports": len(clinic_checkins),
@@ -357,26 +492,25 @@ def _aggregate_clinic_data_from_list(clinic_id: str, clinic_checkins: List[Dict[
 
 
 def _update_clinic_aggregations(checkins: List[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
-    """Update clinic aggregations from all check-ins, grouping by clinic name"""
-    # Group check-ins by normalized clinic name (not by stored clinic_id)
-    # This ensures same clinic name = same clinic, regardless of location or old clinic_id format
-    clinic_groups = defaultdict(list)
-    
+    """Update clinic aggregations from all check-ins, grouping by name and location bucket.
+
+    Using a coarse spatial bucket (~10km) prevents merging clinics with the same
+    name that are far apart while still consolidating very close duplicates.
+    """
+    clinic_groups: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+
     for checkin in checkins:
-        clinic_name = checkin.get("clinic_name")
-        if not clinic_name:
+        key = _group_key_for_checkin(checkin)
+        if key is None:
             continue
-        # Normalize clinic name to create consistent clinic_id
-        normalized_id = re.sub(r'[^a-z0-9]+', '_', clinic_name.lower().strip()).strip('_')
-        clinic_groups[normalized_id].append(checkin)
-    
-    clinics = {}
-    for clinic_id, clinic_checkins in clinic_groups.items():
-        # Use the aggregation function but pass all check-ins for this clinic
-        clinic_data = _aggregate_clinic_data_from_list(clinic_id, clinic_checkins)
+        clinic_groups[key].append(checkin)
+
+    clinics: Dict[str, Dict[str, Any]] = {}
+    for clinic_key, clinic_checkins in clinic_groups.items():
+        clinic_data = _aggregate_clinic_data_from_list(clinic_key, clinic_checkins)
         if clinic_data:
-            clinics[clinic_id] = clinic_data
-    
+            clinics[clinic_key] = clinic_data
+
     return clinics
 
 
@@ -405,16 +539,18 @@ def _checkins_to_geojson(clinics: Dict[str, Dict[str, Any]], model: WaitTimePred
         # Predict wait time for next hour
         hour = now.hour
         weekday = now.weekday()
-        recent_condition = clinic_data.get("current_condition", "Busy")
-        predicted_wait = model.predict(hour, weekday, recent_condition)
+        recent_condition = clinic_data.get("current_condition", "Moderate")
+        latest_wait = clinic_data.get("latest_wait_time")
+        predicted_wait = model.predict(clinic_id, hour, weekday, recent_condition, latest_wait)
         
-        # Determine pin color based on wait time
-        avg_wait = clinic_data.get("average_wait_time") or predicted_wait
-        if avg_wait < 15:
+        # Determine pin color based on most recent wait time
+        recent_wait = clinic_data.get("latest_wait_time")
+        reference_wait = recent_wait if recent_wait is not None else predicted_wait
+        if reference_wait < 15:
             color = "green"
-        elif avg_wait < 30:
+        elif reference_wait < 30:
             color = "yellow"
-        elif avg_wait < 60:
+        elif reference_wait < 60:
             color = "orange"
         else:
             color = "red"
@@ -426,9 +562,9 @@ def _checkins_to_geojson(clinics: Dict[str, Dict[str, Any]], model: WaitTimePred
                 "properties": {
                     "clinic_id": clinic_id,
                     "clinic_name": clinic_data.get("clinic_name", "Unknown"),
-                    "average_wait_time": clinic_data.get("average_wait_time"),
+                    "latest_wait_time": clinic_data.get("latest_wait_time"),
                     "predicted_wait_time": round(predicted_wait, 1),
-                    "current_condition": clinic_data.get("current_condition", "Busy"),
+                    "current_condition": clinic_data.get("current_condition", "Moderate"),
                     "reliability_score": clinic_data.get("reliability_score", 0),
                     "total_reports": clinic_data.get("total_reports", 0),
                     "color": color,
@@ -445,7 +581,8 @@ DEFAULT_CLINIC_TEMPLATES = [
         "clinic_name": "Central Care Clinic",
         "location": {"latitude": 51.0453, "longitude": -114.0573},
         "average_wait_time": 22.0,
-        "current_condition": "Busy",
+        "latest_wait_time": 18.0,
+        "current_condition": "Moderate",
         "reliability_score": 40,
         "total_reports": 8,
         "recent_reports": 3,
@@ -455,6 +592,7 @@ DEFAULT_CLINIC_TEMPLATES = [
         "clinic_name": "Riverside Medical",
         "location": {"latitude": 51.0508, "longitude": -114.0719},
         "average_wait_time": 35.0,
+        "latest_wait_time": 42.0,
         "current_condition": "Overloaded",
         "reliability_score": 55,
         "total_reports": 15,
@@ -465,6 +603,7 @@ DEFAULT_CLINIC_TEMPLATES = [
         "clinic_name": "Northside Health Centre",
         "location": {"latitude": 51.0805, "longitude": -114.1065},
         "average_wait_time": 12.0,
+        "latest_wait_time": 10.0,
         "current_condition": "Smooth",
         "reliability_score": 30,
         "total_reports": 6,
@@ -568,8 +707,9 @@ def nearby_clinics(
         # Predict wait time
         hour = now.hour
         weekday = now.weekday()
-        recent_condition = clinic_data.get("current_condition", "Busy")
-        predicted_wait = model.predict(hour, weekday, recent_condition)
+        recent_condition = clinic_data.get("current_condition", "Moderate")
+        latest_wait = clinic_data.get("latest_wait_time")
+        predicted_wait = model.predict(clinic_id, hour, weekday, recent_condition, latest_wait)
         
         nearby.append({
             **clinic_data,
@@ -590,7 +730,7 @@ async def create_checkin(
     longitude: float = Form(...),
     check_in_time: str = Form(...),
     check_out_time: str = Form(...),
-    condition: str = Form(..., pattern="^(Smooth|Busy|Overloaded)$"),
+    condition: str = Form(..., pattern="^(Smooth|Moderate|Overloaded)$"),
 ):
     """Create a new check-in record"""
     # Validate times
@@ -639,10 +779,10 @@ async def create_checkin(
     weekday = check_in_dt.weekday()
     
     # Predict what the model would have predicted
-    predicted_wait = model.predict(hour, weekday, condition)
+    predicted_wait = model.predict(clinic_id, hour, weekday, condition)
     
     # Update model with actual wait time
-    model.update(hour, weekday, condition, wait_time, predicted_wait)
+    model.update(clinic_id, hour, weekday, condition, wait_time, predicted_wait)
     _save_model(model)
     
     return JSONResponse(content=checkin, status_code=201)

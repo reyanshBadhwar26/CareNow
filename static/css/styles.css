@@ -5,6 +5,11 @@
   --medical-blue: #0d47a1;
   --medical-blue-light: #1976d2;
   --medical-blue-dark: #0277bd;
+  /* Cause Gradient */
+  --cause-1: #0ea5e9;   /* sky-500 */
+  --cause-2: #22c55e;   /* emerald-500 */
+  --cause-3: #14b8a6;   /* teal-500 */
+  --cause-4: #6366f1;   /* indigo-500 */
   --medical-blue-50: #e3f2fd;
   --medical-blue-100: #bbdefb;
   --medical-blue-200: #90caf9;
@@ -25,6 +30,8 @@
   --primary-light: var(--medical-blue-light);
   --primary-dark: var(--medical-blue-dark);
   --primary-50: var(--medical-blue-50);
+  --accent: var(--cause-3);
+  --accent-2: var(--cause-4);
   
   /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -144,7 +151,7 @@ body::before {
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(13, 71, 161, 0.1);
@@ -990,6 +997,45 @@ body::before {
   box-shadow: 0 0 0 4px rgba(13, 71, 161, 0.1);
   transform: translateY(-2px);
 }
+
+/* Clinic Selector - creative styling */
+.clinic-selector {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+.select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.select-wrapper .select-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--primary);
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.select-wrapper select.form-select {
+  width: 100%;
+  padding-left: 40px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--primary) 50%),
+    linear-gradient(135deg, var(--primary) 50%, transparent 50%);
+  background-position: calc(100% - 24px) calc(1.1em), calc(100% - 18px) calc(1.1em);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+.custom-clinic-group {
+  animation: fadeIn var(--transition-base);
+}
+
+/* Removed “cause banner”, side panel, CTA bar for a cleaner layout */
 
 .form-row {
   display: grid;

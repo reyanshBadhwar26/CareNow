@@ -7,7 +7,89 @@ const locationDisplay = document.getElementById("location-display");
 const checkInInput = document.getElementById("check_in_time");
 const checkOutInput = document.getElementById("check_out_time");
 const submitProgress = document.getElementById("submit-progress");
+const clinicSelect = document.getElementById("clinic_select");
+const clinicCustomInput = document.getElementById("clinic_name_custom");
+const clinicNameHidden = document.getElementById("clinic_name_hidden");
+const customClinicGroup = document.getElementById("custom-clinic-group");
 let locationReady = false;
+
+// Cache clinics as array for populating select
+let clinicsList = [];
+
+async function populateClinicsSelect() {
+  if (!clinicSelect) return;
+  try {
+    const resp = await fetch("/clinics");
+    if (!resp.ok) return;
+    const clinics = await resp.json();
+    clinicsList = Array.isArray(clinics) ? clinics : [];
+    // Reset select options (keep the first placeholder)
+    clinicSelect.innerHTML = "";
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    placeholder.textContent = "Select a clinic…";
+    clinicSelect.appendChild(placeholder);
+
+    for (const c of clinicsList) {
+      const name = (c?.clinic_name || "").trim();
+      const lat = Number(c?.location?.latitude);
+      const lon = Number(c?.location?.longitude);
+      if (!name) continue;
+      const opt = document.createElement("option");
+      opt.value = name;
+      if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
+        opt.textContent = `${name} (${lat.toFixed(3)}, ${lon.toFixed(3)})`;
+        opt.dataset.lat = String(lat);
+        opt.dataset.lon = String(lon);
+      } else {
+        opt.textContent = name;
+      }
+      clinicSelect.appendChild(opt);
+    }
+
+    const other = document.createElement("option");
+    other.value = "__custom__";
+    other.textContent = "Other (type clinic name)";
+    clinicSelect.appendChild(other);
+  } catch {
+    // ignore populate failures
+  }
+}
+
+function handleClinicChange() {
+  if (!clinicSelect || !clinicNameHidden) return;
+  const value = clinicSelect.value;
+  if (value === "__custom__") {
+    if (customClinicGroup) customClinicGroup.style.display = "block";
+    if (clinicCustomInput) clinicCustomInput.focus();
+    clinicNameHidden.value = clinicCustomInput?.value?.trim() || "";
+    // Do not override geolocation; user may be at the clinic
+    return;
+  }
+  if (customClinicGroup) customClinicGroup.style.display = "none";
+  clinicNameHidden.value = value || "";
+  const selectedOpt = clinicSelect.selectedOptions[0];
+  const lat = Number(selectedOpt?.dataset?.lat);
+  const lon = Number(selectedOpt?.dataset?.lon);
+  if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
+    if (latInput) latInput.value = lat.toFixed(6);
+    if (lonInput) lonInput.value = lon.toFixed(6);
+    locationReady = true;
+    setLocationMessage(`Using selected clinic location: ${lat.toFixed(6)}, ${lon.toFixed(6)}`, "success");
+    setStatus("Clinic selected from list. Coordinates prefilled.");
+    if (locateBtn) locateBtn.disabled = false;
+  }
+}
+
+if (clinicCustomInput) {
+  clinicCustomInput.addEventListener("input", () => {
+    if (clinicNameHidden && clinicSelect?.value === "__custom__") {
+      clinicNameHidden.value = clinicCustomInput.value.trim();
+    }
+  });
+}
 
 function setStatus(message, type = "info") {
   if (!statusEl) return;
@@ -119,6 +201,12 @@ function setDefaultTimes() {
 // Initialize default times on page load
 setDefaultTimes();
 
+// Populate clinic select
+populateClinicsSelect();
+if (clinicSelect) {
+  clinicSelect.addEventListener("change", handleClinicChange);
+}
+
 if (locateBtn) {
   locateBtn.addEventListener("click", () => requestLocation());
 }
@@ -134,6 +222,11 @@ if (form) {
     }
 
     const formData = new FormData(form);
+    const clinicName = (clinicNameHidden?.value || "").trim();
+    if (!clinicName) {
+      setStatus("Please select a clinic or choose Other and type its name.", "error");
+      return;
+    }
 
     // Convert datetime-local to ISO format
     const checkInTime = formData.get("check_in_time");
@@ -164,7 +257,7 @@ if (form) {
 
     // Create new FormData with ISO formatted times
     const submitData = new FormData();
-    submitData.append("clinic_name", formData.get("clinic_name") || "");
+    submitData.append("clinic_name", clinicName);
     submitData.append("latitude", formData.get("latitude") || "");
     submitData.append("longitude", formData.get("longitude") || "");
     submitData.append("check_in_time", checkInDate.toISOString());

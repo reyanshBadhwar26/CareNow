@@ -62,11 +62,14 @@ function setMapStatus(message, isError = false) {
 }
 
 function getMarkerColor(waitTime) {
+  // Match legend exactly: Smooth (0–15), Moderate (15–60), Overloaded (60+)
   if (waitTime === null || waitTime === undefined) return "gray";
-  if (waitTime < 15) return "green";
-  if (waitTime < 30) return "yellow";
-  if (waitTime < 60) return "orange";
-  return "red";
+  const v = Number(waitTime);
+  if (!Number.isFinite(v)) return "gray";
+  if (v <= 15) return "green";      // 0–15 inclusive
+  if (v <= 30) return "yellow";     // >15–30 inclusive
+  if (v < 60) return "orange";      // >30–<60
+  return "red";                      // 60+
 }
 
 function getMarkerIcon(color) {
@@ -122,7 +125,7 @@ function formatCondition(condition) {
   if (!condition) return "Unknown";
   const conditionLabels = {
     Smooth: "Smooth",
-    Busy: "Busy",
+    Moderate: "Moderate",
     Overloaded: "Overloaded",
   };
   return conditionLabels[condition] || condition;
@@ -130,7 +133,7 @@ function formatCondition(condition) {
 
 function buildPopup(properties) {
   const clinicName = properties.clinic_name || "Unknown Clinic";
-  const avgWait = properties.average_wait_time;
+  const latestWait = properties.latest_wait_time;
   const predictedWait = properties.predicted_wait_time;
   const condition = properties.current_condition;
   const reliability = properties.reliability_score;
@@ -139,7 +142,7 @@ function buildPopup(properties) {
   return `
     <div>
       <h3>${clinicName}</h3>
-      <p><strong>Average Wait:</strong> ${formatWaitTime(avgWait)}</p>
+      <p><strong>Latest Report:</strong> ${formatWaitTime(latestWait)}</p>
       <p><strong>Predicted Wait:</strong> ${formatWaitTime(predictedWait)} <small>(next hour)</small></p>
       <p><strong>Condition:</strong> ${formatCondition(condition)}</p>
       <p><strong>Reliability:</strong> ${reliability ? Math.round(reliability) : 0}%</p>
@@ -292,10 +295,10 @@ async function loadClinics(forceRefresh = false) {
 
         console.log(`Adding marker ${markersAdded + 1}: ${props.clinic_name} at [${offsetLat.toFixed(6)}, ${offsetLon.toFixed(6)}]`);
 
-        // Use predicted wait time for color, fallback to average wait time
+        // Use predicted wait time for color, fallback to latest report
         const waitTime = props.predicted_wait_time !== undefined 
           ? props.predicted_wait_time 
-          : props.average_wait_time;
+          : props.latest_wait_time;
         const color = getMarkerColor(waitTime);
         
         // Get hex color for hover effects
@@ -610,7 +613,7 @@ async function findNearbyClinics() {
                     <strong>Distance:</strong> ${clinic.distance_km} km away
                   </div>
                   <div class="clinic-info-item">
-                    <strong>Average Wait:</strong> ${formatWaitTime(clinic.average_wait_time)}
+                    <strong>Latest Report:</strong> ${formatWaitTime(clinic.latest_wait_time)}
                   </div>
                   <div class="clinic-info-item">
                     <strong>Condition:</strong> ${formatCondition(clinic.current_condition)}

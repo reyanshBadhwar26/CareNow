@@ -43,6 +43,8 @@
   animation: scaleIn 0.6s ease-out;
 }
 
+/* Floating chips removed for a calmer map presentation */
+
 .map-status {
   display: flex;
   align-items: center;

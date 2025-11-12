@@ -99,16 +99,12 @@
                   <div class="icon-pulse"></div>
                 </div>
                 <div>
-                  <h3>Quick Report</h3>
-                  <p>Share your visit in seconds</p>
+                  <h3>Submit Report</h3>
+                  <p>Step 1 of 2 • Share your visit</p>
                 </div>
               </div>
               <div class="hero-card-progress">
                 <div class="progress-indicator">
-                  <div class="progress-dot active">
-                    <div class="progress-dot-inner"></div>
-                  </div>
-                  <div class="progress-line active"></div>
                   <div class="progress-dot active">
                     <div class="progress-dot-inner"></div>
                   </div>
@@ -117,7 +113,7 @@
                     <div class="progress-dot-inner"></div>
                   </div>
                 </div>
-                <div class="progress-text">Step 2 of 3</div>
+                <div class="progress-text">Step 1 of 2</div>
               </div>
               <div class="hero-card-stats">
                 <div class="card-stat">
@@ -138,6 +134,7 @@
 
     <!-- Main Content -->
     <main class="main-container">
+      <section>
       <!-- Report Form Section -->
       <section class="report-section">
         <div class="section-header">
@@ -164,7 +161,7 @@
                 <h3>Clinic Information</h3>
       </div>
               <div class="form-group">
-                <label class="form-label required" for="clinic_name">
+                <label class="form-label required" for="clinic_select">
                   <span class="label-icon-wrapper">
                     <svg class="label-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -174,17 +171,29 @@
                   </span>
                   Clinic Name
                 </label>
-                <input
-                  type="text"
-                  id="clinic_name"
-                  name="clinic_name"
-                  class="form-input"
-                  placeholder="e.g., Downtown Medical Center"
-                  required
-                  minlength="1"
-                />
-      </div>
-    </div>
+                <div class="clinic-selector">
+                  <div class="select-wrapper">
+                    <svg class="select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3 7h18M3 12h18M3 17h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <select id="clinic_select" class="form-select" aria-label="Clinic list">
+                      <option value="" disabled selected>Select a clinic…</option>
+                    </select>
+                  </div>
+                  <div class="custom-clinic-group" id="custom-clinic-group" style="display:none;">
+                    <input
+                      type="text"
+                      id="clinic_name_custom"
+                      class="form-input"
+                      placeholder="Type clinic name"
+                      minlength="1"
+                    />
+                  </div>
+                  <!-- Hidden field actually submitted -->
+                  <input type="hidden" id="clinic_name_hidden" name="clinic_name" value="" />
+                </div>
+              </div>
+            </div>
 
             <div class="form-section">
               <div class="form-section-header">
@@ -259,12 +268,12 @@
                     </div>
                   </label>
                   <label class="condition-option">
-                    <input type="radio" name="condition" value="Busy" required />
+                    <input type="radio" name="condition" value="Moderate" required />
                     <div class="condition-card">
                       <div class="condition-icon-circle yellow">
                         <div class="condition-icon-inner"></div>
                       </div>
-                      <div class="condition-title">Busy</div>
+                      <div class="condition-title">Moderate</div>
                       <div class="condition-desc">Moderate wait, normal flow</div>
                     </div>
                   </label>
@@ -317,6 +326,7 @@
             </button>
           </div>
         </form>
+      </section>
 
           <div id="status" class="status-message info" role="status" style="display: block;">
             <div class="status-icon-wrapper">
@@ -360,7 +370,7 @@
             </div>
             <div class="timeline-content">
               <h3>Report Wait Time</h3>
-              <p>Submit your check-in and check-out times along with the clinic condition (Smooth, Busy, or Overloaded).</p>
+            <p>Submit your check-in and check-out times along with the clinic condition (Smooth, Moderate, or Overloaded).</p>
             </div>
           </div>
           <div class="timeline-item">
