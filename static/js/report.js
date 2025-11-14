@@ -11,7 +11,33 @@ const clinicSelect = document.getElementById("clinic_select");
 const clinicCustomInput = document.getElementById("clinic_name_custom");
 const clinicNameHidden = document.getElementById("clinic_name_hidden");
 const customClinicGroup = document.getElementById("custom-clinic-group");
+const i18nApi = window.i18n;
+const translate = (key, params) => (i18nApi ? i18nApi.t(key, params) : key);
+const applyLocale = (element) => {
+  if (element && i18nApi?.applyTranslations) {
+    i18nApi.applyTranslations(element);
+  }
+};
 let locationReady = false;
+let lastStatusSpec = null;
+let lastLocationSpec = null;
+
+function resolveMessage(input) {
+  if (input && typeof input === "object" && Object.prototype.hasOwnProperty.call(input, "key")) {
+    const spec = {
+      key: input.key,
+      params: input.params || {},
+    };
+    return {
+      text: translate(spec.key, spec.params),
+      spec,
+    };
+  }
+  if (typeof input === "string") {
+    return { text: input, spec: null };
+  }
+  return { text: input == null ? "" : String(input), spec: null };
+}
 
 // Cache clinics as array for populating select
 let clinicsList = [];
@@ -29,7 +55,8 @@ async function populateClinicsSelect() {
     placeholder.value = "";
     placeholder.disabled = true;
     placeholder.selected = true;
-    placeholder.textContent = "Select a clinic…";
+    placeholder.dataset.i18n = "report.form.selectPlaceholder";
+    placeholder.textContent = translate("report.form.selectPlaceholder");
     clinicSelect.appendChild(placeholder);
 
     for (const c of clinicsList) {
@@ -40,7 +67,13 @@ async function populateClinicsSelect() {
       const opt = document.createElement("option");
       opt.value = name;
       if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
-        opt.textContent = `${name} (${lat.toFixed(3)}, ${lon.toFixed(3)})`;
+        const latText = lat.toFixed(3);
+        const lonText = lon.toFixed(3);
+        opt.textContent = translate("report.form.clinicOptionWithCoords", {
+          name,
+          lat: latText,
+          lon: lonText,
+        });
         opt.dataset.lat = String(lat);
         opt.dataset.lon = String(lon);
       } else {
@@ -51,8 +84,10 @@ async function populateClinicsSelect() {
 
     const other = document.createElement("option");
     other.value = "__custom__";
-    other.textContent = "Other (type clinic name)";
+    other.dataset.i18n = "report.form.otherOption";
+    other.textContent = translate("report.form.otherOption");
     clinicSelect.appendChild(other);
+    applyLocale(clinicSelect);
   } catch {
     // ignore populate failures
   }
@@ -74,11 +109,16 @@ function handleClinicChange() {
   const lat = Number(selectedOpt?.dataset?.lat);
   const lon = Number(selectedOpt?.dataset?.lon);
   if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
-    if (latInput) latInput.value = lat.toFixed(6);
-    if (lonInput) lonInput.value = lon.toFixed(6);
+    const latText = lat.toFixed(6);
+    const lonText = lon.toFixed(6);
+    if (latInput) latInput.value = latText;
+    if (lonInput) lonInput.value = lonText;
     locationReady = true;
-    setLocationMessage(`Using selected clinic location: ${lat.toFixed(6)}, ${lon.toFixed(6)}`, "success");
-    setStatus("Clinic selected from list. Coordinates prefilled.");
+    setLocationMessage(
+      { key: "report.status.selectedClinicLocation", params: { lat: latText, lon: lonText } },
+      "success"
+    );
+    setStatus({ key: "report.status.clinicSelected" }, "success");
     if (locateBtn) locateBtn.disabled = false;
   }
 }
@@ -91,39 +131,48 @@ if (clinicCustomInput) {
   });
 }
 
-function setStatus(message, type = "info") {
+function setStatus(message, type = "info", options = {}) {
   if (!statusEl) return;
+  const { preserveSpec = false } = options;
+  const { text, spec } = resolveMessage(message);
   const statusText = statusEl.querySelector(".status-text");
   const statusIcon = statusEl.querySelector(".status-icon");
   if (statusText) {
-    statusText.textContent = message;
+    statusText.textContent = text;
   } else {
-    statusEl.textContent = message;
+    statusEl.textContent = text;
   }
   statusEl.style.display = "flex";
   statusEl.classList.remove("success", "error", "info");
   statusEl.classList.add(type);
   
-  // Update icon based on type - icons are now SVG, so we update the class or SVG path
+  if (!preserveSpec) {
+    lastStatusSpec = spec ? { ...spec, type } : null;
+  }
+
   if (statusIcon) {
-    // Icons are now SVG, so we might need to update classes or leave as is
-    // The SVG structure handles the icon display
+    // Icons remain SVG; no adjustments required yet
   }
 }
 
-function setLocationMessage(message, type = "info") {
+function setLocationMessage(message, type = "info", options = {}) {
   if (!locationDisplay) return;
+  const { preserveSpec = false } = options;
+  const { text, spec } = resolveMessage(message);
   const locationText = locationDisplay.querySelector(".location-text");
   if (locationText) {
-    locationText.textContent = message;
+    locationText.textContent = text;
   } else {
-    locationDisplay.textContent = message;
+    locationDisplay.textContent = text;
   }
   locationDisplay.classList.remove("ready", "error");
   if (type === "success") {
     locationDisplay.classList.add("ready");
   } else if (type === "error") {
     locationDisplay.classList.add("error");
+  }
+  if (!preserveSpec) {
+    lastLocationSpec = spec ? { ...spec, type } : null;
   }
 }
 
@@ -133,8 +182,8 @@ function handleLocationSuccess(latitude, longitude) {
   if (latInput) latInput.value = lat;
   if (lonInput) lonInput.value = lon;
   locationReady = true;
-  setLocationMessage(`Current location locked: ${lat}, ${lon}`, "success");
-  setStatus("Location captured. You can submit a report or jump to the live map.");
+  setLocationMessage({ key: "report.status.locationLocked", params: { lat, lon } }, "success");
+  setStatus({ key: "report.status.locationCaptured" }, "success");
   if (locateBtn) locateBtn.disabled = false;
 }
 
@@ -142,23 +191,23 @@ function handleLocationError(message, silent = false) {
   locationReady = false;
   if (latInput) latInput.value = "";
   if (lonInput) lonInput.value = "";
-  const errorText = message || "Unable to fetch location.";
-  setLocationMessage(errorText, "error");
+  const payload = message || { key: "report.status.locationUnavailable" };
+  setLocationMessage(payload, "error");
   if (!silent) {
-    setStatus(errorText, "error");
+    setStatus(payload, "error");
   }
   if (locateBtn) locateBtn.disabled = false;
 }
 
 function requestLocation({ silent = false } = {}) {
   if (!navigator.geolocation) {
-    handleLocationError("Geolocation is not supported by this browser.");
+    handleLocationError({ key: "report.status.geolocationUnsupported" });
     return;
   }
 
   if (locateBtn) locateBtn.disabled = true;
   if (!silent) {
-    setStatus("Requesting current location…");
+    setStatus({ key: "report.status.requestingLocation" }, "info");
   }
 
   navigator.geolocation.getCurrentPosition(
@@ -167,7 +216,10 @@ function requestLocation({ silent = false } = {}) {
       handleLocationSuccess(latitude, longitude);
     },
     (error) => {
-      handleLocationError(`Unable to fetch location: ${error.message}`, silent);
+      handleLocationError(
+        { key: "report.status.locationErrorWithDetail", params: { detail: error.message } },
+        silent
+      );
     },
     {
       enableHighAccuracy: true,
@@ -212,19 +264,39 @@ if (locateBtn) {
 }
 requestLocation({ silent: true });
 
+document.addEventListener("languagechange", () => {
+  if (lastStatusSpec) {
+    setStatus(
+      { key: lastStatusSpec.key, params: lastStatusSpec.params },
+      lastStatusSpec.type,
+      { preserveSpec: true }
+    );
+  }
+  if (lastLocationSpec) {
+    setLocationMessage(
+      { key: lastLocationSpec.key, params: lastLocationSpec.params },
+      lastLocationSpec.type,
+      { preserveSpec: true }
+    );
+  }
+  if (clinicSelect) {
+    applyLocale(clinicSelect);
+  }
+});
+
 if (form) {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     if (!locationReady) {
-      setStatus("We need your current location before submitting.", "error");
+      setStatus({ key: "report.status.needLocation" }, "error");
       return;
     }
 
     const formData = new FormData(form);
     const clinicName = (clinicNameHidden?.value || "").trim();
     if (!clinicName) {
-      setStatus("Please select a clinic or choose Other and type its name.", "error");
+      setStatus({ key: "report.status.selectClinic" }, "error");
       return;
     }
 
@@ -233,7 +305,7 @@ if (form) {
     const checkOutTime = formData.get("check_out_time");
 
     if (!checkInTime || !checkOutTime) {
-      setStatus("Please provide both check-in and check-out times.", "error");
+      setStatus({ key: "report.status.needTimes" }, "error");
       return;
     }
 
@@ -242,7 +314,7 @@ if (form) {
     const checkOutDate = new Date(checkOutTime);
 
     if (checkOutDate <= checkInDate) {
-      setStatus("Check-out time must be after check-in time.", "error");
+      setStatus({ key: "report.status.checkoutAfter" }, "error");
       return;
     }
 
@@ -251,7 +323,7 @@ if (form) {
     const condition = conditionRadio ? conditionRadio.value : "";
     
     if (!condition) {
-      setStatus("Please select a clinic condition.", "error");
+      setStatus({ key: "report.status.needCondition" }, "error");
       return;
     }
 
@@ -264,7 +336,7 @@ if (form) {
     submitData.append("check_out_time", checkOutDate.toISOString());
     submitData.append("condition", condition);
 
-  setStatus("Submitting report…", "info");
+  setStatus({ key: "report.status.submitting" }, "info");
   if (submitProgress) {
     submitProgress.style.display = "block";
   }
@@ -289,10 +361,14 @@ if (form) {
       }
 
       const waitTime = data?.wait_time;
-      const clinicName = data?.clinic_name || "Clinic";
+      const clinicNameResponse = (data?.clinic_name || "").trim();
+      const clinicLabel = clinicNameResponse || translate("report.status.unknownClinic");
+      const waitDisplay = Number.isFinite(Number(waitTime))
+        ? translate("units.minutes", { value: Math.round(Number(waitTime)) })
+        : translate("units.notAvailable");
 
       setStatus(
-        `Report saved! Wait time: ${waitTime ? Math.round(waitTime) : "N/A"} minutes at ${clinicName}.`,
+        { key: "report.status.saved", params: { wait: waitDisplay, clinic: clinicLabel } },
         "success"
       );
 

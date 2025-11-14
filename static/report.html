@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CareNow - Report Clinic Wait Time</title>
+    <title data-i18n="seo.report.title">CareNow - Report Clinic Wait Time</title>
     <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -12,6 +12,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/static/css/styles.css" />
+    <script defer src="/static/js/i18n.js"></script>
     <script defer src="/static/js/report.js"></script>
     <script defer src="/static/js/metrics.js"></script>
   </head>
@@ -32,21 +33,37 @@
           </div>
           <div class="brand-text">
             <span class="brand-name">CareNow</span>
-            <span class="brand-tagline">Wait Time Intelligence</span>
+            <span class="brand-tagline" data-i18n="nav.tagline">Wait Time Intelligence</span>
           </div>
         </div>
         <div class="nav-links">
           <a href="/" class="is-active">
             <span class="nav-icon"></span>
-            <span>Report</span>
+            <span data-i18n="nav.report">Report</span>
           </a>
           <a href="/map">
             <span class="nav-icon"></span>
-            <span>Map</span>
+            <span data-i18n="nav.map">Map</span>
           </a>
         </div>
+        <div class="nav-controls">
+          <label class="language-selector" aria-label="Language" data-i18n-aria-label="language.selectorLabel">
+            <svg class="language-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <select id="language-select" class="language-select" data-language-select>
+              <option value="en">English</option>
+              <option value="ar">العربية</option>
+              <option value="zh">中文</option>
+              <option value="pa">ਪੰਜਾਬੀ</option>
+              <option value="es">Español</option>
+              <option value="fr">Français</option>
+            </select>
+          </label>
         </div>
-      </nav>
+      </div>
+    </nav>
 
     <!-- Hero Section with Background Pattern -->
     <section class="hero-section">
@@ -58,30 +75,30 @@
         <div class="hero-content">
           <div class="hero-badge">
             <span class="badge-pulse"></span>
-            <span>Live Wait Time Data</span>
+            <span data-i18n="report.hero.badge">Live Wait Time Data</span>
     </div>
           <h1 class="hero-title">
-            Report Clinic
-            <span class="gradient-text">Wait Times</span>
+            <span data-i18n="report.hero.title">Report Clinic</span>
+            <span class="gradient-text" data-i18n="report.hero.highlight">Wait Times</span>
         </h1>
-          <p class="hero-description">
+          <p class="hero-description" data-i18n="report.hero.description">
             Help patients make informed decisions by sharing your clinic visit experience. 
             Every report helps our AI system provide accurate wait time predictions for better healthcare access.
           </p>
           <div class="hero-stats-inline">
             <div class="hero-stat-item">
               <div class="hero-stat-value" data-stat="reports-count">--</div>
-              <div class="hero-stat-label">Reports</div>
+              <div class="hero-stat-label" data-i18n="stats.reports">Reports</div>
             </div>
             <div class="hero-stat-divider"></div>
             <div class="hero-stat-item">
               <div class="hero-stat-value" data-stat="clinics-count">--</div>
-              <div class="hero-stat-label">Clinics</div>
+              <div class="hero-stat-label" data-i18n="stats.clinics">Clinics</div>
             </div>
             <div class="hero-stat-divider"></div>
             <div class="hero-stat-item">
               <div class="hero-stat-value" data-stat="avg-wait-time">--</div>
-              <div class="hero-stat-label">Avg Wait</div>
+              <div class="hero-stat-label" data-i18n="stats.avgWait">Avg Wait</div>
         </div>
           </div>
         </div>
@@ -99,8 +116,8 @@
                   <div class="icon-pulse"></div>
                 </div>
                 <div>
-                  <h3>Submit Report</h3>
-                  <p>Step 1 of 2 • Share your visit</p>
+                  <h3 data-i18n="report.hero.card.title">Submit Report</h3>
+                  <p data-i18n="report.hero.card.subtitle">Step 1 of 2 - Share your visit</p>
                 </div>
               </div>
               <div class="hero-card-progress">
@@ -113,17 +130,17 @@
                     <div class="progress-dot-inner"></div>
                   </div>
                 </div>
-                <div class="progress-text">Step 1 of 2</div>
+                <div class="progress-text" data-i18n="report.hero.card.progress">Step 1 of 2</div>
               </div>
               <div class="hero-card-stats">
                 <div class="card-stat">
                   <div class="card-stat-value">30s</div>
-                  <div class="card-stat-label">Avg Time</div>
+                  <div class="card-stat-label" data-i18n="report.hero.card.avgTime">Avg Time</div>
                 </div>
                 <div class="card-stat-divider"></div>
                 <div class="card-stat">
                   <div class="card-stat-value">100+</div>
-                  <div class="card-stat-label">Reports</div>
+                  <div class="card-stat-label" data-i18n="stats.reports">Reports</div>
                 </div>
               </div>
           </div>
@@ -148,8 +165,8 @@
             </svg>
           </div>
           <div>
-            <h2 class="section-title">Submit Wait Time Report</h2>
-            <p class="section-subtitle">Fill in your clinic visit details to help others</p>
+            <h2 class="section-title" data-i18n="report.form.title">Submit Wait Time Report</h2>
+            <p class="section-subtitle" data-i18n="report.form.subtitle">Fill in your clinic visit details to help others</p>
           </div>
         </div>
         
@@ -158,7 +175,7 @@
             <div class="form-section">
               <div class="form-section-header">
                 <span class="form-section-number">01</span>
-                <h3>Clinic Information</h3>
+                <h3 data-i18n="report.form.section1.title">Clinic Information</h3>
       </div>
               <div class="form-group">
                 <label class="form-label required" for="clinic_select">
@@ -169,15 +186,15 @@
                       <polyline points="7 3 7 8 15 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  Clinic Name
+                  <span data-i18n="report.form.clinicName">Clinic Name</span>
                 </label>
                 <div class="clinic-selector">
                   <div class="select-wrapper">
                     <svg class="select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M3 7h18M3 12h18M3 17h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                     </svg>
-                    <select id="clinic_select" class="form-select" aria-label="Clinic list">
-                      <option value="" disabled selected>Select a clinic…</option>
+                    <select id="clinic_select" class="form-select" aria-label="Clinic list" data-i18n-aria-label="report.form.clinicList">
+                      <option value="" disabled selected data-i18n="report.form.selectPlaceholder">Select a clinic...</option>
                     </select>
                   </div>
                   <div class="custom-clinic-group" id="custom-clinic-group" style="display:none;">
@@ -186,6 +203,7 @@
                       id="clinic_name_custom"
                       class="form-input"
                       placeholder="Type clinic name"
+                      data-i18n-placeholder="report.form.customClinicPlaceholder"
                       minlength="1"
                     />
                   </div>
@@ -198,7 +216,7 @@
             <div class="form-section">
               <div class="form-section-header">
                 <span class="form-section-number">02</span>
-                <h3>Visit Times</h3>
+                <h3 data-i18n="report.form.section2.title">Visit Times</h3>
               </div>
               <div class="form-row">
                 <div class="form-group">
@@ -209,7 +227,7 @@
                         <polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                       </svg>
                     </span>
-                    Check-in Time
+                    <span data-i18n="report.form.checkIn">Check-in Time</span>
                   </label>
                   <input
                     type="datetime-local"
@@ -227,7 +245,7 @@
                         <polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                       </svg>
                     </span>
-                    Check-out Time
+                    <span data-i18n="report.form.checkOut">Check-out Time</span>
           </label>
               <input
                     type="datetime-local"
@@ -243,7 +261,7 @@
             <div class="form-section">
               <div class="form-section-header">
                 <span class="form-section-number">03</span>
-                <h3>Clinic Condition</h3>
+                <h3 data-i18n="report.form.section3.title">Clinic Condition</h3>
               </div>
               <div class="form-group">
                 <label class="form-label required" for="condition">
@@ -254,7 +272,7 @@
                       <line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                     </svg>
                   </span>
-                  How was the clinic?
+                  <span data-i18n="report.form.conditionQuestion">How was the clinic?</span>
                 </label>
                 <div class="condition-selector">
                   <label class="condition-option">
@@ -263,8 +281,8 @@
                       <div class="condition-icon-circle green">
                         <div class="condition-icon-inner"></div>
                       </div>
-                      <div class="condition-title">Smooth</div>
-                      <div class="condition-desc">Quick service, minimal wait</div>
+                      <div class="condition-title" data-i18n="conditions.smooth">Smooth</div>
+                      <div class="condition-desc" data-i18n="conditions.smoothDesc">Quick service, minimal wait</div>
                     </div>
                   </label>
                   <label class="condition-option">
@@ -273,8 +291,8 @@
                       <div class="condition-icon-circle yellow">
                         <div class="condition-icon-inner"></div>
                       </div>
-                      <div class="condition-title">Moderate</div>
-                      <div class="condition-desc">Moderate wait, normal flow</div>
+                      <div class="condition-title" data-i18n="conditions.moderate">Moderate</div>
+                      <div class="condition-desc" data-i18n="conditions.moderateDesc">Moderate wait, normal flow</div>
                     </div>
                   </label>
                   <label class="condition-option">
@@ -283,8 +301,8 @@
                       <div class="condition-icon-circle red">
                         <div class="condition-icon-inner"></div>
                       </div>
-                      <div class="condition-title">Overloaded</div>
-                      <div class="condition-desc">Long wait, crowded</div>
+                      <div class="condition-title" data-i18n="conditions.overloaded">Overloaded</div>
+                      <div class="condition-desc" data-i18n="conditions.overloadedDesc">Long wait, crowded</div>
                     </div>
           </label>
                 </div>
@@ -294,7 +312,7 @@
             <div class="form-section">
               <div class="form-section-header">
                 <span class="form-section-number">04</span>
-                <h3>Location</h3>
+                <h3 data-i18n="report.form.section4.title">Location</h3>
               </div>
               <div class="form-group">
             <input type="hidden" name="latitude" id="latitude" />
@@ -306,7 +324,7 @@
                       <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
                     </svg>
                   </div>
-                  <div class="location-text">Waiting for location permission…</div>
+                  <div class="location-text" data-i18n="report.form.locationWaiting">Waiting for location permission...</div>
                 </div>
                 <button type="button" id="locate-btn" class="btn btn-secondary location-btn">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -314,14 +332,14 @@
                     <polyline points="1 20 1 14 7 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
-                  <span>Refresh Location</span>
+                  <span data-i18n="report.form.refreshLocation">Refresh Location</span>
                 </button>
               </div>
           </div>
 
             <div class="form-actions">
               <button type="submit" class="btn btn-primary submit-btn">
-                <span>Submit Report</span>
+                <span data-i18n="report.form.submit">Submit Report</span>
                 <span class="btn-arrow">→</span>
             </button>
           </div>
@@ -336,7 +354,7 @@
                 <line x1="12" y1="8" x2="12.01" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
             </div>
-            <div class="status-text">Fill in the form above to submit a clinic wait time report.</div>
+            <div class="status-text" data-i18n="report.form.statusIdle">Fill in the form above to submit a clinic wait time report.</div>
         </div>
 
           <div id="submit-progress" style="display: none; margin-top: 1rem;">
@@ -358,8 +376,8 @@
             </svg>
           </div>
           <div>
-            <h2 class="section-title">How It Works</h2>
-            <p class="section-subtitle">AI-powered wait time prediction system</p>
+            <h2 class="section-title" data-i18n="report.how.title">How It Works</h2>
+            <p class="section-subtitle" data-i18n="report.how.subtitle">AI-powered wait time prediction system</p>
           </div>
         </div>
 
@@ -369,8 +387,8 @@
               <div class="timeline-icon">1</div>
             </div>
             <div class="timeline-content">
-              <h3>Report Wait Time</h3>
-            <p>Submit your check-in and check-out times along with the clinic condition (Smooth, Moderate, or Overloaded).</p>
+              <h3 data-i18n="report.how.step1.title">Report Wait Time</h3>
+            <p data-i18n="report.how.step1.desc">Submit your check-in and check-out times along with the clinic condition (Smooth, Moderate, or Overloaded).</p>
             </div>
           </div>
           <div class="timeline-item">
@@ -378,8 +396,8 @@
               <div class="timeline-icon">2</div>
             </div>
             <div class="timeline-content">
-              <h3>AI Processes Data</h3>
-              <p>Our machine learning model aggregates wait times per clinic and calculates average wait times, reliability scores, and current conditions.</p>
+              <h3 data-i18n="report.how.step2.title">AI Processes Data</h3>
+              <p data-i18n="report.how.step2.desc">Our machine learning model aggregates wait times per clinic and calculates average wait times, reliability scores, and current conditions.</p>
             </div>
           </div>
           <div class="timeline-item">
@@ -387,8 +405,8 @@
               <div class="timeline-icon">3</div>
             </div>
             <div class="timeline-content">
-              <h3>Model Learns</h3>
-              <p>The reinforcement learning model updates its predictions using a reward function that penalizes inaccurate predictions and improves over time.</p>
+              <h3 data-i18n="report.how.step3.title">Model Learns</h3>
+              <p data-i18n="report.how.step3.desc">The reinforcement learning model updates its predictions using a reward function that penalizes inaccurate predictions and improves over time.</p>
             </div>
           </div>
           <div class="timeline-item">
@@ -396,8 +414,8 @@
               <div class="timeline-icon">4</div>
             </div>
             <div class="timeline-content">
-              <h3>Predict & Display</h3>
-              <p>Predictions are shown on the interactive map with color-coded pins. Patients can find the shortest wait nearby sorted by predicted wait time.</p>
+              <h3 data-i18n="report.how.step4.title">Predict & Display</h3>
+              <p data-i18n="report.how.step4.desc">Predictions are shown on the interactive map with color-coded pins. Patients can find the shortest wait nearby sorted by predicted wait time.</p>
             </div>
           </div>
         </div>
@@ -412,8 +430,8 @@
             </svg>
           </div>
         <div>
-            <h2 class="section-title">Live Statistics</h2>
-            <p class="section-subtitle">Real-time data from our community</p>
+            <h2 class="section-title" data-i18n="report.stats.title">Live Statistics</h2>
+            <p class="section-subtitle" data-i18n="report.stats.subtitle">Real-time data from our community</p>
           </div>
         </div>
         
@@ -426,9 +444,9 @@
                 <polyline points="7 3 7 8 15 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
-            <div class="medical-stat-label">Active Clinics</div>
+            <div class="medical-stat-label" data-i18n="report.stats.activeClinics">Active Clinics</div>
             <div class="medical-stat-value" data-stat="clinics-count">--</div>
-            <div class="medical-stat-description">Being tracked in real-time</div>
+            <div class="medical-stat-description" data-i18n="report.stats.activeClinicsDesc">Being tracked in real-time</div>
           </div>
           <div class="medical-stat stat-large">
             <div class="stat-icon-wrapper">
@@ -437,9 +455,9 @@
                 <polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
-            <div class="medical-stat-label">Average Wait</div>
+            <div class="medical-stat-label" data-i18n="report.stats.averageWait">Average Wait</div>
             <div class="medical-stat-value" data-stat="avg-wait-time">--</div>
-            <div class="medical-stat-description">Minutes across all clinics</div>
+            <div class="medical-stat-description" data-i18n="report.stats.averageWaitDesc">Minutes across all clinics</div>
           </div>
           <div class="medical-stat stat-large">
             <div class="stat-icon-wrapper">
@@ -449,9 +467,9 @@
                 <line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
             </div>
-            <div class="medical-stat-label">Total Reports</div>
+            <div class="medical-stat-label" data-i18n="report.stats.totalReports">Total Reports</div>
             <div class="medical-stat-value" data-stat="reports-count">--</div>
-            <div class="medical-stat-description">Community contributions</div>
+            <div class="medical-stat-description" data-i18n="report.stats.totalReportsDesc">Community contributions</div>
         </div>
       </div>
     </section>
@@ -465,8 +483,8 @@
             </svg>
           </div>
           <div>
-            <h2 class="section-title">Features</h2>
-            <p class="section-subtitle">Why choose CareNow</p>
+            <h2 class="section-title" data-i18n="report.features.title">Features</h2>
+            <p class="section-subtitle" data-i18n="report.features.subtitle">Why choose CareNow</p>
           </div>
       </div>
 
@@ -479,8 +497,8 @@
                 <path d="M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
-            <h3>AI-Powered</h3>
-            <p>Machine learning models predict wait times with increasing accuracy</p>
+            <h3 data-i18n="report.features.ai.title">AI-Powered</h3>
+            <p data-i18n="report.features.ai.desc">Machine learning models predict wait times with increasing accuracy</p>
           </div>
           <div class="feature-card">
             <div class="feature-icon-wrapper">
@@ -489,8 +507,8 @@
                 <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
               </svg>
             </div>
-            <h3>Interactive Map</h3>
-            <p>Visualize clinic locations and wait times on an interactive map</p>
+            <h3 data-i18n="report.features.map.title">Interactive Map</h3>
+            <p data-i18n="report.features.map.desc">Visualize clinic locations and wait times on an interactive map</p>
           </div>
           <div class="feature-card">
             <div class="feature-icon-wrapper">
@@ -499,8 +517,8 @@
                 <polyline points="17 6 23 6 23 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
-            <h3>Real-Time</h3>
-            <p>Live updates from the community keep data fresh and accurate</p>
+            <h3 data-i18n="report.features.realTime.title">Real-Time</h3>
+            <p data-i18n="report.features.realTime.desc">Live updates from the community keep data fresh and accurate</p>
           </div>
           <div class="feature-card">
             <div class="feature-icon-wrapper">
@@ -511,8 +529,8 @@
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
-            <h3>Community-Driven</h3>
-            <p>Crowdsourced data improves predictions for everyone</p>
+            <h3 data-i18n="report.features.community.title">Community-Driven</h3>
+            <p data-i18n="report.features.community.desc">Crowdsourced data improves predictions for everyone</p>
           </div>
           <div class="feature-card">
             <div class="feature-icon-wrapper">
@@ -521,8 +539,8 @@
                 <line x1="12" y1="18" x2="12.01" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
             </div>
-            <h3>Easy to Use</h3>
-            <p>Simple interface makes reporting quick and effortless</p>
+            <h3 data-i18n="report.features.easy.title">Easy to Use</h3>
+            <p data-i18n="report.features.easy.desc">Simple interface makes reporting quick and effortless</p>
           </div>
           <div class="feature-card">
             <div class="feature-icon-wrapper">
@@ -532,8 +550,8 @@
                 <circle cx="12" cy="12" r="2" stroke="currentColor" stroke-width="2"/>
               </svg>
             </div>
-            <h3>Accurate</h3>
-            <p>Reliability scores help you trust the data you're seeing</p>
+            <h3 data-i18n="report.features.accurate.title">Accurate</h3>
+            <p data-i18n="report.features.accurate.desc">Reliability scores help you trust the data you're seeing</p>
           </div>
         </div>
       </section>
@@ -555,16 +573,16 @@
           </div>
           <div class="footer-brand-text">
             <span class="footer-brand-name">CareNow</span>
-            <span class="footer-brand-tagline">Wait Time Intelligence</span>
+            <span class="footer-brand-tagline" data-i18n="nav.tagline">Wait Time Intelligence</span>
           </div>
         </div>
         <div class="footer-links">
-          <a href="/">Report</a>
-          <a href="/map">Map</a>
+          <a href="/" data-i18n="nav.report">Report</a>
+          <a href="/map" data-i18n="nav.map">Map</a>
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 CareNow. Helping patients find the shortest wait times.</p>
+        <p data-i18n="footer.copy" data-i18n-params='{"year":"2025"}'>&copy; 2025 CareNow. Helping patients find the shortest wait times.</p>
       </div>
       </footer>
   </body>

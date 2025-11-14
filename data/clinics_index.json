@@ -12,7 +12,7 @@
     "reliability_score": 81.2,
     "total_reports": 2,
     "recent_reports": 2,
-    "last_updated": "2025-11-12T10:56:42.449486+00:00"
+    "last_updated": "2025-11-13T09:29:19.673512+00:00"
   },
   "test_clinic__511_-1140": {
     "clinic_id": "test_clinic__511_-1140",
@@ -27,7 +27,7 @@
     "reliability_score": 72.3,
     "total_reports": 1,
     "recent_reports": 1,
-    "last_updated": "2025-11-12T10:56:42.449486+00:00"
+    "last_updated": "2025-11-13T09:29:19.673512+00:00"
   },
   "royal_oak_clinic__511_-1143": {
     "clinic_id": "royal_oak_clinic__511_-1143",
@@ -42,7 +42,7 @@
     "reliability_score": 95.3,
     "total_reports": 4,
     "recent_reports": 4,
-    "last_updated": "2025-11-12T10:56:42.449486+00:00"
+    "last_updated": "2025-11-13T09:29:19.673512+00:00"
   },
   "test_clinic__511_-1143": {
     "clinic_id": "test_clinic__511_-1143",
@@ -57,7 +57,7 @@
     "reliability_score": 81.2,
     "total_reports": 2,
     "recent_reports": 2,
-    "last_updated": "2025-11-12T10:56:42.449486+00:00"
+    "last_updated": "2025-11-13T09:29:19.673512+00:00"
   },
   "dental_clinic__511_-1143": {
     "clinic_id": "dental_clinic__511_-1143",
@@ -72,7 +72,7 @@
     "reliability_score": 72.3,
     "total_reports": 1,
     "recent_reports": 1,
-    "last_updated": "2025-11-12T10:56:42.449486+00:00"
+    "last_updated": "2025-11-13T09:29:19.673512+00:00"
   },
   "tuscany_clinic__511_-1143": {
     "clinic_id": "tuscany_clinic__511_-1143",
@@ -87,6 +87,6 @@
     "reliability_score": 72.3,
     "total_reports": 1,
     "recent_reports": 1,
-    "last_updated": "2025-11-12T10:56:42.449486+00:00"
+    "last_updated": "2025-11-13T09:29:19.673512+00:00"
   }
 }

@@ -1,5 +1,25 @@
 const statusBox = document.getElementById("map-status");
 let map;
+const i18nApi = window.i18n;
+const translate = (key, params) => (i18nApi ? i18nApi.t(key, params) : key);
+let lastMapStatus = null;
+
+function resolveMessage(input) {
+  if (input && typeof input === "object" && Object.prototype.hasOwnProperty.call(input, "key")) {
+    const spec = {
+      key: input.key,
+      params: input.params || {},
+    };
+    return {
+      text: translate(spec.key, spec.params),
+      spec,
+    };
+  }
+  if (typeof input === "string") {
+    return { text: input, spec: null };
+  }
+  return { text: input == null ? "" : String(input), spec: null };
+}
 
 // Initialize map after DOM is ready
 function initMap() {
@@ -48,16 +68,20 @@ let markers = [];
 let isLoadingClinics = false;
 let lastClinicsHash = null;
 
-function setMapStatus(message, isError = false) {
-  if (statusBox) {
-    const statusText = statusBox.querySelector(".status-text");
-    if (statusText) {
-      statusText.textContent = message;
-    } else {
-  statusBox.textContent = message;
-    }
-    statusBox.classList.remove("success", "error", "info");
-    statusBox.classList.add(isError ? "error" : "info");
+function setMapStatus(message, isError = false, options = {}) {
+  if (!statusBox) return;
+  const { preserveSpec = false } = options;
+  const { text, spec } = resolveMessage(message);
+  const statusText = statusBox.querySelector(".status-text");
+  if (statusText) {
+    statusText.textContent = text;
+  } else {
+    statusBox.textContent = text;
+  }
+  statusBox.classList.remove("success", "error", "info");
+  statusBox.classList.add(isError ? "error" : "info");
+  if (!preserveSpec) {
+    lastMapStatus = spec ? { ...spec, isError } : null;
   }
 }
 
@@ -117,36 +141,49 @@ function getMarkerIcon(color) {
 }
 
 function formatWaitTime(waitTime) {
-  if (waitTime === null || waitTime === undefined) return "N/A";
-  return `${Math.round(waitTime)} min`;
+  if (!Number.isFinite(Number(waitTime))) {
+    return translate("units.notAvailable");
+  }
+  return translate("units.minutes", { value: Math.round(Number(waitTime)) });
 }
 
 function formatCondition(condition) {
-  if (!condition) return "Unknown";
-  const conditionLabels = {
-    Smooth: "Smooth",
-    Moderate: "Moderate",
-    Overloaded: "Overloaded",
-  };
-  return conditionLabels[condition] || condition;
+  if (!condition) return translate("conditions.unknown");
+  const normalized = String(condition).trim().toLowerCase();
+  if (normalized === "smooth") return translate("conditions.smooth");
+  if (normalized === "moderate") return translate("conditions.moderate");
+  if (normalized === "overloaded") return translate("conditions.overloaded");
+  return condition;
 }
 
 function buildPopup(properties) {
-  const clinicName = properties.clinic_name || "Unknown Clinic";
+  const clinicName =
+    (properties.clinic_name || "").trim() || translate("map.popup.unknownClinic");
   const latestWait = properties.latest_wait_time;
   const predictedWait = properties.predicted_wait_time;
   const condition = properties.current_condition;
   const reliability = properties.reliability_score;
   const totalReports = properties.total_reports || 0;
+  const reportsLabel =
+    totalReports === 1
+      ? translate("map.popup.reportSingular")
+      : translate("map.popup.reportPlural");
 
   return `
     <div>
       <h3>${clinicName}</h3>
-      <p><strong>Latest Report:</strong> ${formatWaitTime(latestWait)}</p>
-      <p><strong>Predicted Wait:</strong> ${formatWaitTime(predictedWait)} <small>(next hour)</small></p>
-      <p><strong>Condition:</strong> ${formatCondition(condition)}</p>
-      <p><strong>Reliability:</strong> ${reliability ? Math.round(reliability) : 0}%</p>
-      <small>Based on ${totalReports} report${totalReports !== 1 ? "s" : ""}</small>
+      <p><strong>${translate("map.popup.latestReport")}:</strong> ${formatWaitTime(latestWait)}</p>
+      <p><strong>${translate("map.popup.predictedWait")}:</strong> ${formatWaitTime(
+        predictedWait
+      )} <small>${translate("map.popup.nextHour")}</small></p>
+      <p><strong>${translate("map.popup.condition")}:</strong> ${formatCondition(condition)}</p>
+      <p><strong>${translate("map.popup.reliability")}:</strong> ${
+        reliability ? Math.round(reliability) : 0
+      }%</p>
+      <small>${translate("map.popup.basedOnReports", {
+        count: totalReports,
+        reports: reportsLabel,
+      })}</small>
     </div>
   `;
 }
@@ -187,7 +224,7 @@ async function loadClinics(forceRefresh = false) {
     
     // Only show loading status on initial load
     if (markers.length === 0) {
-      setMapStatus("Loading clinics…");
+      setMapStatus({ key: "map.status.loadingClinics" });
       
       // Add loading overlay only on initial load
       const mapContainer = document.getElementById("map");
@@ -209,7 +246,7 @@ async function loadClinics(forceRefresh = false) {
     }
 
     if (!data.features?.length) {
-      setMapStatus("No clinics available yet. Submit a report to populate the map.", false);
+      setMapStatus({ key: "map.status.noClinics" }, false);
       // Remove overlay if no data
       const overlay = document.querySelector(".map-loading-overlay");
       if (overlay) {
@@ -221,7 +258,7 @@ async function loadClinics(forceRefresh = false) {
     }
 
     if (!map) {
-      setMapStatus("Map not initialized. Please refresh the page.", true);
+      setMapStatus({ key: "map.status.mapNotReady" }, true);
       // Remove overlay on error
       const overlay = document.querySelector(".map-loading-overlay");
       if (overlay) {
@@ -538,13 +575,16 @@ async function loadClinics(forceRefresh = false) {
             });
           }
           
-          setMapStatus(`Loaded ${finalMarkerCount} clinic(s).`, false);
+          setMapStatus(
+            { key: "map.status.loadedCount", params: { count: finalMarkerCount } },
+            false
+          );
         }, 500); // Increased delay to ensure markers are stable
       }, 200); // Increased delay before starting bounds fit
     } else {
       // No markers were added
       console.error("No markers were added!");
-      setMapStatus("No clinics found on map.", true);
+      setMapStatus({ key: "map.status.noMarkers" }, true);
       const overlay = document.querySelector(".map-loading-overlay");
       if (overlay) {
         overlay.classList.add("hidden");
@@ -568,16 +608,16 @@ async function loadClinics(forceRefresh = false) {
 
 async function findNearbyClinics() {
   if (!navigator.geolocation) {
-    alert("Geolocation is not supported by your browser.");
+    alert(translate("map.alert.geolocationUnsupported"));
     return;
   }
 
-  setMapStatus("Finding your location…");
+  setMapStatus({ key: "map.status.findingLocation" });
 
   navigator.geolocation.getCurrentPosition(
     async (position) => {
       const { latitude, longitude } = position.coords;
-      setMapStatus("Loading nearby clinics…");
+      setMapStatus({ key: "map.status.loadingNearby" });
 
       try {
         const response = await fetch(
@@ -597,29 +637,45 @@ async function findNearbyClinics() {
           nearbyClinicsDiv.innerHTML = "";
 
           if (clinics.length === 0) {
-            nearbyClinicsDiv.innerHTML = "<p>No clinics found nearby.</p>";
+            nearbyClinicsDiv.innerHTML = "";
+            const emptyMessage = document.createElement("p");
+            emptyMessage.textContent = translate("map.nearby.none");
+            nearbyClinicsDiv.appendChild(emptyMessage);
           } else {
             clinics.forEach((clinic, index) => {
               const clinicDiv = document.createElement("div");
               clinicDiv.className = "nearby-clinic-item";
               clinicDiv.style.animationDelay = `${index * 0.1}s`;
+              const clinicTitle =
+                (clinic.clinic_name || "").trim() || translate("map.popup.unknownClinic");
               clinicDiv.innerHTML = `
-                <h4>${clinic.clinic_name}</h4>
+                <h4>${clinicTitle}</h4>
                 <div class="clinic-info">
                   <div class="clinic-info-item">
-                    <strong>Predicted Wait:</strong> ${formatWaitTime(clinic.predicted_wait_time)}
+                    <strong>${translate("map.labels.predictedWait")}:</strong> ${formatWaitTime(
+                      clinic.predicted_wait_time
+                    )}
                   </div>
                   <div class="clinic-info-item">
-                    <strong>Distance:</strong> ${clinic.distance_km} km away
+                    <strong>${translate("map.labels.distance")}:</strong> ${translate(
+                      "units.kilometersAway",
+                      { value: clinic.distance_km }
+                    )}
                   </div>
                   <div class="clinic-info-item">
-                    <strong>Latest Report:</strong> ${formatWaitTime(clinic.latest_wait_time)}
+                    <strong>${translate("map.labels.latestReport")}:</strong> ${formatWaitTime(
+                      clinic.latest_wait_time
+                    )}
                   </div>
                   <div class="clinic-info-item">
-                    <strong>Condition:</strong> ${formatCondition(clinic.current_condition)}
+                    <strong>${translate("map.labels.condition")}:</strong> ${formatCondition(
+                      clinic.current_condition
+                    )}
                   </div>
                   <div class="clinic-info-item">
-                    <strong>Reliability:</strong> ${clinic.reliability_score ? Math.round(clinic.reliability_score) : 0}%
+                    <strong>${translate("map.labels.reliability")}:</strong> ${
+                      clinic.reliability_score ? Math.round(clinic.reliability_score) : 0
+                    }%
                   </div>
                 </div>
               `;
@@ -691,7 +747,10 @@ async function findNearbyClinics() {
             nearbySection.scrollIntoView({ behavior: "smooth", block: "start" });
           }, 10);
           
-          setMapStatus(`Found ${clinics.length} nearby clinic(s).`, false);
+          setMapStatus(
+            { key: "map.status.foundNearby", params: { count: clinics.length } },
+            false
+          );
           // Status icon is SVG - no changes needed
           // Status is updated by setMapStatus function
         }
@@ -701,7 +760,10 @@ async function findNearbyClinics() {
       }
     },
     (error) => {
-      setMapStatus(`Unable to get location: ${error.message}`, true);
+      setMapStatus(
+        { key: "map.status.locationErrorWithDetail", params: { detail: error.message } },
+        true
+      );
       // Status icon is SVG - no changes needed
       // Status is updated by setMapStatus function
     },
@@ -790,6 +852,16 @@ window.addEventListener("resize", () => {
       }, 100);
     }
   }, 250);
+});
+
+document.addEventListener("languagechange", () => {
+  if (lastMapStatus) {
+    setMapStatus(
+      { key: lastMapStatus.key, params: lastMapStatus.params },
+      lastMapStatus.isError,
+      { preserveSpec: true }
+    );
+  }
 });
 
 // DISABLED: Auto-refresh was causing markers to disappear
