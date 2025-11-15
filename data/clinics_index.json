@@ -12,7 +12,7 @@
     "reliability_score": 81.2,
     "total_reports": 2,
     "recent_reports": 2,
-    "last_updated": "2025-11-15T02:53:10.077018+00:00"
+    "last_updated": "2025-11-15T03:37:00.451337+00:00"
   },
   "test_clinic__511_-1140": {
     "clinic_id": "test_clinic__511_-1140",
@@ -27,22 +27,22 @@
     "reliability_score": 72.3,
     "total_reports": 1,
     "recent_reports": 1,
-    "last_updated": "2025-11-15T02:53:10.077018+00:00"
+    "last_updated": "2025-11-15T03:37:00.451337+00:00"
   },
   "royal_oak_clinic__511_-1143": {
     "clinic_id": "royal_oak_clinic__511_-1143",
     "clinic_name": "Royal Oak Clinic",
     "location": {
-      "latitude": 51.153268,
-      "longitude": -114.230732
+      "latitude": 51.150848,
+      "longitude": -114.239078
     },
-    "average_wait_time": 99.4,
-    "latest_wait_time": 60.0,
+    "average_wait_time": 90.8,
+    "latest_wait_time": 13.0,
     "current_condition": "Smooth",
     "reliability_score": 97.0,
-    "total_reports": 9,
-    "recent_reports": 9,
-    "last_updated": "2025-11-15T02:53:10.077018+00:00"
+    "total_reports": 10,
+    "recent_reports": 10,
+    "last_updated": "2025-11-15T03:37:00.452780+00:00"
   },
   "dental_clinic__511_-1143": {
     "clinic_id": "dental_clinic__511_-1143",
@@ -57,7 +57,7 @@
     "reliability_score": 81.2,
     "total_reports": 2,
     "recent_reports": 2,
-    "last_updated": "2025-11-15T02:53:10.077018+00:00"
+    "last_updated": "2025-11-15T03:37:00.452780+00:00"
   },
   "tuscany_clinic__511_-1143": {
     "clinic_id": "tuscany_clinic__511_-1143",
@@ -72,6 +72,6 @@
     "reliability_score": 72.3,
     "total_reports": 1,
     "recent_reports": 1,
-    "last_updated": "2025-11-15T02:53:10.077018+00:00"
+    "last_updated": "2025-11-15T03:37:00.452780+00:00"
   }
 }

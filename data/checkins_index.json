@@ -208,5 +208,19 @@
     "wait_time": 240.0,
     "condition": "Overloaded",
     "created_at": "2025-11-15T02:53:06.973764+00:00"
+  },
+  {
+    "checkin_id": "f9a3cf8a-823c-42ed-a32b-bbd8425f5db5",
+    "clinic_id": "royal_oak_clinic",
+    "clinic_name": "Royal Oak Clinic",
+    "location": {
+      "latitude": 51.150848,
+      "longitude": -114.239078
+    },
+    "check_in_time": "2025-11-15T01:57:00.000Z",
+    "check_out_time": "2025-11-15T02:10:00.000Z",
+    "wait_time": 13.0,
+    "condition": "Smooth",
+    "created_at": "2025-11-15T02:57:34.091382+00:00"
   }
 ]

@@ -766,7 +766,6 @@ def clinics_geojson() -> JSONResponse:
     model = _load_model()
     return JSONResponse(content=_checkins_to_geojson(clinics, model))
 
-
 @app.get("/clinics/nearby")
 def nearby_clinics(
     latitude: float = Query(..., description="User's latitude"),
@@ -775,13 +774,13 @@ def nearby_clinics(
     limit: int = Query(10, description="Maximum number of results"),
 ) -> JSONResponse:
     """Get nearby clinics sorted by predicted wait time"""
-    clinics = _get_current_clinics(regenerate=False)
+    clinics = _get_current_clinics(regenerate=True)
     model = _load_model()
     now = datetime.now(timezone.utc)
     
     # Calculate distances and predict wait times
     nearby = []
-    for clinic_id, clinic_data in clinics.items():
+    for agg_id, clinic_data in clinics.items():
         location = clinic_data.get("location") or {}
         lat = location.get("latitude")
         lon = location.get("longitude")
@@ -796,12 +795,14 @@ def nearby_clinics(
         if distance_km > radius_km:
             continue
         
-        # Predict wait time
+        # Predict wait time – use SAME model key as map: normalized clinic name
         hour = now.hour
         weekday = now.weekday()
         recent_condition = clinic_data.get("current_condition", "Moderate")
         latest_wait = clinic_data.get("latest_wait_time")
-        predicted_wait = model.predict(clinic_id, hour, weekday, recent_condition, latest_wait)
+
+        model_clinic_id = _normalize_clinic_name(clinic_data.get("clinic_name", ""))
+        predicted_wait = model.predict(model_clinic_id, hour, weekday, recent_condition, latest_wait)
         
         nearby.append({
             **clinic_data,
@@ -814,7 +815,6 @@ def nearby_clinics(
     
     return JSONResponse(content=nearby[:limit])
 
-
 @app.post("/checkins")
 async def create_checkin(
     clinic_name: str = Form(..., min_length=1),
@@ -824,7 +824,8 @@ async def create_checkin(
     check_out_time: str = Form(...),
     condition: str = Form(..., pattern="^(Smooth|Moderate|Overloaded)$"),
 ):
-    """Create a new check-in record"""
+    """Create a new check-in record with consistent clinic IDs."""
+    
     # Validate times
     try:
         check_in_dt = datetime.fromisoformat(check_in_time.replace("Z", "+00:00"))
@@ -838,15 +839,24 @@ async def create_checkin(
     wait_time = _compute_wait_time(check_in_time, check_out_time)
     if wait_time is None:
         raise HTTPException(status_code=400, detail="Unable to calculate wait time")
-    
-    # Generate clinic ID from name only (normalized)
-    clinic_id = re.sub(r'[^a-z0-9]+', '_', clinic_name.lower().strip()).strip('_')
-    
-    # Create check-in record
+
+    # --- Aggregation ID (bucketed, for map/clinics grouping) ---
+    temp_checkin = {
+        "clinic_name": clinic_name,
+        "location": {"latitude": latitude, "longitude": longitude},
+    }
+    agg_clinic_id = _group_key_for_checkin(temp_checkin)
+    if not agg_clinic_id:
+        agg_clinic_id = _normalize_clinic_name(clinic_name)
+
+    # --- Model ID (name-only, matches map + nearby) ---
+    model_clinic_id = _normalize_clinic_name(clinic_name)
+
+    # Create final checkin object
     checkin_id = str(uuid.uuid4())
     checkin = {
         "checkin_id": checkin_id,
-        "clinic_id": clinic_id,
+        "clinic_id": agg_clinic_id,  # used for aggregations
         "clinic_name": clinic_name,
         "location": {"latitude": latitude, "longitude": longitude},
         "check_in_time": check_in_time,
@@ -856,27 +866,39 @@ async def create_checkin(
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
 
-    # Load existing check-ins and add new one
+    # Save checkin
     checkins = _load_checkins()
     checkins.append(checkin)
     _save_checkins(checkins)
-    
-    # Update clinic aggregations (this will regenerate based on clinic name)
+
+    # Update clinic aggregations
     clinics = _update_clinic_aggregations(checkins)
     _save_clinics(clinics)
-    
-    # Update model with new data
+
+    # Update model (train using NAME-ONLY ID)
     model = _load_model()
     hour = check_in_dt.hour
     weekday = check_in_dt.weekday()
-    
-    # Predict what the model would have predicted
-    predicted_wait = model.predict(clinic_id, hour, weekday, condition)
-    
-    # Update model with actual wait time
-    model.update(clinic_id, hour, weekday, condition, wait_time, predicted_wait)
+
+    predicted_wait_before = model.predict(
+        model_clinic_id,
+        hour,
+        weekday,
+        condition,
+        latest_wait=wait_time,
+    )
+
+    model.update(
+        model_clinic_id,
+        hour,
+        weekday,
+        condition,
+        wait_time,
+        predicted_wait_before,
+    )
+
     _save_model(model)
-    
+
     return JSONResponse(content=checkin, status_code=201)
 
 
