@@ -222,5 +222,33 @@
     "wait_time": 13.0,
     "condition": "Smooth",
     "created_at": "2025-11-15T02:57:34.091382+00:00"
+  },
+  {
+    "checkin_id": "00807c39-2f61-40cd-95d8-39d55db5b40d",
+    "clinic_id": "dental_clinic__511_-1143",
+    "clinic_name": "Dental Clinic",
+    "location": {
+      "latitude": 51.150848,
+      "longitude": -114.239078
+    },
+    "check_in_time": "2025-11-15T02:43:00.000Z",
+    "check_out_time": "2025-11-15T03:43:00.000Z",
+    "wait_time": 60.0,
+    "condition": "Moderate",
+    "created_at": "2025-11-15T03:44:11.806607+00:00"
+  },
+  {
+    "checkin_id": "e7b197ff-8b6d-4643-ade0-116c3637e0d6",
+    "clinic_id": "dental_clinic__511_-1143",
+    "clinic_name": "Dental Clinic",
+    "location": {
+      "latitude": 51.150848,
+      "longitude": -114.239078
+    },
+    "check_in_time": "2025-11-15T02:46:00.000Z",
+    "check_out_time": "2025-11-15T03:46:00.000Z",
+    "wait_time": 60.0,
+    "condition": "Moderate",
+    "created_at": "2025-11-15T03:46:21.173609+00:00"
   }
 ]

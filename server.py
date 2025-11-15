@@ -778,7 +778,6 @@ def nearby_clinics(
     model = _load_model()
     now = datetime.now(timezone.utc)
     
-    # Calculate distances and predict wait times
     nearby = []
     for agg_id, clinic_data in clinics.items():
         location = clinic_data.get("location") or {}
@@ -795,25 +794,26 @@ def nearby_clinics(
         if distance_km > radius_km:
             continue
         
-        # Predict wait time – use SAME model key as map: normalized clinic name
         hour = now.hour
         weekday = now.weekday()
         recent_condition = clinic_data.get("current_condition", "Moderate")
         latest_wait = clinic_data.get("latest_wait_time")
 
+        # ✅ same model ID as map + create_checkin
         model_clinic_id = _normalize_clinic_name(clinic_data.get("clinic_name", ""))
         predicted_wait = model.predict(model_clinic_id, hour, weekday, recent_condition, latest_wait)
         
         nearby.append({
             **clinic_data,
+            "clinic_id": agg_id,  # keep aggregated id for frontend identity
             "distance_km": round(distance_km, 2),
             "predicted_wait_time": round(predicted_wait, 1),
         })
     
-    # Sort by predicted wait time
     nearby.sort(key=lambda x: x.get("predicted_wait_time", 999))
     
     return JSONResponse(content=nearby[:limit])
+
 
 @app.post("/checkins")
 async def create_checkin(
@@ -880,12 +880,13 @@ async def create_checkin(
     hour = check_in_dt.hour
     weekday = check_in_dt.weekday()
 
+    # ✅ use positional fallback argument, not `latest_wait=`
     predicted_wait_before = model.predict(
         model_clinic_id,
         hour,
         weekday,
         condition,
-        latest_wait=wait_time,
+        wait_time,  # fallback
     )
 
     model.update(
