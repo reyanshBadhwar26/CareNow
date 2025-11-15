@@ -746,6 +746,16 @@ def map_page() -> HTMLResponse:
     return HTMLResponse(_read_static_page("map.html"))
 
 
+@app.get("/about", response_class=HTMLResponse)
+def about_page() -> HTMLResponse:
+    return HTMLResponse(_read_static_page("about.html"))
+
+
+@app.get("/involve", response_class=HTMLResponse)
+def involve_page() -> HTMLResponse:
+    return HTMLResponse(_read_static_page("involve.html"))
+
+
 @app.get("/checkins")
 def list_checkins() -> JSONResponse:
     checkins = _load_checkins()

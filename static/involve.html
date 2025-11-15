@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareNow - Get Involved</title>
+    <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <script defer src="/static/js/i18n.js"></script>
+    <script defer src="/static/js/metrics.js"></script>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="nav-container">
+      <div class="nav">
+        <div class="brand">
+          <div class="brand-mark">
+            <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="32" cy="32" r="20" fill="rgba(13, 71, 161, 0.1)" stroke="rgba(13, 71, 161, 0.3)" stroke-width="1"/>
+              <rect x="29" y="18" width="6" height="28" rx="3" fill="#0d47a1"/>
+              <rect x="18" y="29" width="28" height="6" rx="3" fill="#0d47a1"/>
+              <line x1="32" y1="32" x2="40" y2="32" stroke="#1976d2" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="32" y1="32" x2="32" y2="22" stroke="#1976d2" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="32" cy="32" r="2.5" fill="#1976d2"/>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-name">CareNow</span>
+            <span class="brand-tagline" data-i18n="nav.tagline">Wait Time Intelligence</span>
+          </div>
+        </div>
+        <div class="nav-links">
+          <a href="/">
+            <span class="nav-icon"></span>
+            <span data-i18n="nav.report">Report</span>
+          </a>
+          <a href="/map">
+            <span class="nav-icon"></span>
+            <span data-i18n="nav.map">Map</span>
+          </a>
+          <a href="/about">
+            <span class="nav-icon"></span>
+            <span>About</span>
+          </a>
+          <a href="/involve" class="is-active">
+            <span class="nav-icon"></span>
+            <span>Get Involved</span>
+          </a>
+        </div>
+        <div class="nav-controls">
+          <label class="language-selector" aria-label="Language" data-i18n-aria-label="language.selectorLabel">
+            <svg class="language-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <select class="language-select" data-language-select>
+              <option value="en">English</option>
+              <option value="ar">العربية</option>
+              <option value="zh">中文</option>
+              <option value="pa">ਪੰਜਾਬੀ</option>
+              <option value="es">Español</option>
+              <option value="fr">Français</option>
+            </select>
+          </label>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-background">
+        <div class="hero-pattern"></div>
+        <div class="hero-gradient"></div>
+      </div>
+      <div class="hero-content-wrapper">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="badge-pulse"></span>
+            <span>Join Our Community</span>
+          </div>
+          <h1 class="hero-title">
+            <span>Get</span>
+            <span class="gradient-text">Involved</span>
+          </h1>
+          <p class="hero-description">
+            CareNow is a community-driven platform that relies on contributions from people like you. Whether you're a patient, developer, or healthcare advocate, there are many ways to help improve healthcare accessibility for everyone.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-container">
+      <!-- Report Wait Times Section -->
+      <section class="report-section">
+        <div class="section-header">
+          <div class="section-icon-wrapper">
+            <svg class="section-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="section-title">Report Wait Times</h2>
+            <p class="section-subtitle">The easiest way to contribute</p>
+          </div>
+        </div>
+        
+        <div class="form-container">
+          <p style="font-size: 1.125rem; line-height: 1.8; color: var(--medical-gray-700); margin-bottom: var(--spacing-lg);">
+            Every clinic visit you report helps improve our predictions for everyone. It only takes 30 seconds to submit a report, and your contribution directly helps other patients make informed decisions.
+          </p>
+          <div style="display: flex; gap: var(--spacing-md); flex-wrap: wrap;">
+            <a href="/" class="btn btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span>Submit a Report</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Ways to Contribute Section -->
+      <section class="features-section">
+        <div class="section-header">
+          <div class="section-icon-wrapper">
+            <svg class="section-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="section-title">Ways to Contribute</h2>
+            <p class="section-subtitle">Multiple ways to make a difference</p>
+          </div>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <svg class="feature-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Share Your Experience</h3>
+            <p>Report wait times after your clinic visits. Every report helps improve predictions and helps other patients.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <svg class="feature-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>Spread the Word</h3>
+            <p>Tell friends, family, and your healthcare providers about CareNow. More users mean better data and more accurate predictions.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <svg class="feature-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 17l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>Contribute Code</h3>
+            <p>Are you a developer? Help us improve the platform by contributing code, fixing bugs, or adding new features.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <svg class="feature-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Provide Feedback</h3>
+            <p>Share your ideas, report issues, or suggest improvements. Your feedback helps us build a better platform.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <svg class="feature-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2"/>
+                <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <h3>Help with Translations</h3>
+            <p>CareNow supports multiple languages. Help us translate the platform to make it accessible to more people worldwide.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <svg class="feature-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="17 6 23 6 23 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>Improve Data Quality</h3>
+            <p>Report accurate information and flag any incorrect data you notice. Quality data leads to better predictions.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- How It Works Section -->
+      <section class="how-it-works-section">
+        <div class="section-header">
+          <div class="section-icon-wrapper">
+            <svg class="section-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M19.07 4.93l-4.24 4.24m0 5.66l4.24 4.24M4.93 19.07l4.24-4.24m0-5.66L4.93 4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="section-title">How Your Contribution Helps</h2>
+            <p class="section-subtitle">The impact of community participation</p>
+          </div>
+        </div>
+
+        <div class="timeline-container">
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-icon">1</div>
+            </div>
+            <div class="timeline-content">
+              <h3>You Report a Wait Time</h3>
+              <p>After visiting a clinic, you submit a report with your check-in time, check-out time, and the clinic's condition.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-icon">2</div>
+            </div>
+            <div class="timeline-content">
+              <h3>Data is Processed</h3>
+              <p>Our AI system processes your report along with others, updating clinic statistics and improving prediction models.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-icon">3</div>
+            </div>
+            <div class="timeline-content">
+              <h3>Predictions Improve</h3>
+              <p>With more data, our machine learning model becomes more accurate, providing better wait time predictions.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-icon">4</div>
+            </div>
+            <div class="timeline-content">
+              <h3>Patients Benefit</h3>
+              <p>Other patients can now make informed decisions about which clinic to visit, saving time and reducing stress.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Call to Action Section -->
+      <section class="stats-section">
+        <div class="section-header">
+          <div class="section-icon-wrapper">
+            <svg class="section-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="17 6 23 6 23 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="section-title">Ready to Help?</h2>
+            <p class="section-subtitle">Start contributing today</p>
+          </div>
+        </div>
+        
+        <div class="form-container" style="text-align: center;">
+          <p style="font-size: 1.125rem; line-height: 1.8; color: var(--medical-gray-700); margin-bottom: var(--spacing-xl);">
+            Join thousands of patients who are already helping improve healthcare accessibility. Every contribution matters, no matter how small.
+          </p>
+          <div style="display: flex; gap: var(--spacing-md); flex-wrap: wrap; justify-content: center;">
+            <a href="/" class="btn btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span>Submit Your First Report</span>
+            </a>
+            <a href="/map" class="btn btn-secondary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2"/>
+                <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              <span>Explore the Map</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <div class="brand-mark">
+            <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="32" cy="32" r="20" fill="rgba(13, 71, 161, 0.1)" stroke="rgba(13, 71, 161, 0.3)" stroke-width="1"/>
+              <rect x="29" y="18" width="6" height="28" rx="3" fill="#0d47a1"/>
+              <rect x="18" y="29" width="28" height="6" rx="3" fill="#0d47a1"/>
+              <line x1="32" y1="32" x2="40" y2="32" stroke="#1976d2" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="32" y1="32" x2="32" y2="22" stroke="#1976d2" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="32" cy="32" r="2.5" fill="#1976d2"/>
+            </svg>
+          </div>
+          <div class="footer-brand-text">
+            <span class="footer-brand-name">CareNow</span>
+            <span class="footer-brand-tagline" data-i18n="nav.tagline">Wait Time Intelligence</span>
+          </div>
+        </div>
+        <div class="footer-links">
+          <a href="/" data-i18n="nav.report">Report</a>
+          <a href="/map" data-i18n="nav.map">Map</a>
+          <a href="/about">About</a>
+          <a href="/involve">Get Involved</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p data-i18n="footer.copy" data-i18n-params='{"year":"2025"}'>&copy; 2025 CareNow. Helping patients find the shortest wait times.</p>
+      </div>
+    </footer>
+  </body>
+</html>
+
