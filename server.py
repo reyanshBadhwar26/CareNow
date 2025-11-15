@@ -54,147 +54,237 @@ STATIC_DIR.mkdir(exist_ok=True)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
-# Wait time prediction model (simple Q-learning based)
+from collections import defaultdict
+from datetime import datetime, timezone
+
 class WaitTimePredictor:
-    """Per-clinic wait-time predictor using incremental statistics."""
+    """
+    A forward-looking wait-time predictor using:
+    - Long-term averages (overall)
+    - Same-hour seasonal patterns
+    - Same-weekday patterns
+    - Recent-trend projection
+    - Bias factor to ensure prediction ≠ latest report
+    """
 
     def __init__(
         self,
-        min_hourly_samples: int = 1,
-        min_weekday_samples: int = 1,
         default_wait: float = 30.0,
+        max_history: int = 20,       # how many recent waits to keep for trend
     ):
-        self.min_hourly_samples = min_hourly_samples
-        self.min_weekday_samples = min_weekday_samples
-        self.default_wait = default_wait
-        self.clinic_stats: Dict[str, Dict[str, Any]] = {}
-        self.global_stats: Dict[str, float] = {"total": 0.0, "count": 0}
+        self.default_wait = float(default_wait)
+        self.max_history = max(5, int(max_history))
 
-    @staticmethod
-    def _avg_entry(entry: Optional[Dict[str, float]]) -> Optional[float]:
-        if not entry:
-            return None
-        count = entry.get("count", 0)
-        if count <= 0:
-            return None
-        return entry.get("total", 0.0) / count
+        # Stats per clinic_id
+        self.stats = {}  # { clinic_id: { "overall":..., "hourly":..., "weekday":..., "recent":... } }
 
-    @staticmethod
-    def _update_entry(bucket: Dict[str, Dict[str, float]], key: str, value: float) -> None:
-        entry = bucket.setdefault(key, {"total": 0.0, "count": 0})
-        entry["total"] += value
-        entry["count"] += 1
 
-    @staticmethod
-    def _init_clinic_stats() -> Dict[str, Any]:
-        return {
-            "overall": {"total": 0.0, "count": 0},
-            "hourly": {},
-            "weekday": {},
-            "condition": {},
-        }
-
-    def predict(
-        self,
-        clinic_id: Optional[str],
-        hour: int,
-        weekday: int,
-        recent_condition: str = "Moderate",
-        fallback_wait: Optional[float] = None,
-    ) -> float:
-        fallback = fallback_wait if fallback_wait is not None else self.default_wait
-        if not clinic_id:
+    # -----------------------------
+    # Utility functions
+    # -----------------------------
+    def _safe_float(self, v, fallback=None):
+        """Convert to float safely."""
+        try:
+            return float(v)
+        except:
             return fallback
 
-        stats = self.clinic_stats.get(clinic_id)
-        if not stats:
-            return fallback
 
-        hour_key = str(hour % 24)
-        weekday_key = str(weekday % 7)
-        condition_key = (recent_condition or "Unknown").strip()
-
-        hour_entry = stats["hourly"].get(hour_key)
-        if hour_entry and hour_entry.get("count", 0) >= self.min_hourly_samples:
-            avg = self._avg_entry(hour_entry)
-            if avg is not None:
-                return avg
-
-        weekday_entry = stats["weekday"].get(weekday_key)
-        if weekday_entry and weekday_entry.get("count", 0) >= self.min_weekday_samples:
-            avg = self._avg_entry(weekday_entry)
-            if avg is not None:
-                return avg
-
-        condition_entry = stats["condition"].get(condition_key)
-        if condition_entry and condition_entry.get("count", 0) >= 2:
-            avg = self._avg_entry(condition_entry)
-            if avg is not None:
-                return avg
-
-        overall_avg = self._avg_entry(stats["overall"])
-        return overall_avg if overall_avg is not None else fallback
-
-    def update(
-        self,
-        clinic_id: Optional[str],
-        hour: int,
-        weekday: int,
-        condition: str,
-        actual_wait_time: float,
-        predicted_wait_time: Optional[float] = None,
-    ) -> None:
-        # Keep signature compatible with previous caller; predicted_wait_time unused.
-        self.global_stats["total"] += actual_wait_time
-        self.global_stats["count"] += 1
-
-        if not clinic_id:
-            return
-
-        stats = self.clinic_stats.setdefault(clinic_id, self._init_clinic_stats())
-        stats["overall"]["total"] += actual_wait_time
-        stats["overall"]["count"] += 1
-
-        hour_key = str(hour % 24)
-        weekday_key = str(weekday % 7)
-        condition_key = (condition or "Unknown").strip()
-
-        self._update_entry(stats["hourly"], hour_key, actual_wait_time)
-        self._update_entry(stats["weekday"], weekday_key, actual_wait_time)
-        self._update_entry(stats["condition"], condition_key, actual_wait_time)
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "clinic_stats": self.clinic_stats,
-            "global_stats": self.global_stats,
-            "default_wait": self.default_wait,
-            "min_hourly_samples": self.min_hourly_samples,
-            "min_weekday_samples": self.min_weekday_samples,
-        }
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "WaitTimePredictor":
-        data = data or {}
-        model = cls(
-            min_hourly_samples=data.get("min_hourly_samples", 1),
-            min_weekday_samples=data.get("min_weekday_samples", 1),
-            default_wait=data.get("default_wait", 30.0),
-        )
-        clinic_stats = data.get("clinic_stats")
-        if isinstance(clinic_stats, dict):
-            model.clinic_stats = clinic_stats
-        else:
-            model.clinic_stats = {}
-        global_stats = data.get("global_stats")
-        if isinstance(global_stats, dict):
-            model.global_stats = {
-                "total": float(global_stats.get("total", 0.0)),
-                "count": float(global_stats.get("count", 0.0)),
+    def _get_clinic(self, clinic_id: str):
+        """Initialize empty stats if necessary."""
+        if clinic_id not in self.stats:
+            self.stats[clinic_id] = {
+                "overall": {"total": 0.0, "count": 0},
+                "hourly": {},        # "14": {"total":..., "count":..., "value":...}
+                "weekday": {},       # "2": {"total":..., "count":..., "value":...}
+                "recent": []         # list of floats
             }
-        else:
-            model.global_stats = {"total": 0.0, "count": 0}
-        return model
+        return self.stats[clinic_id]
 
+
+    # -----------------------------
+    # UPDATE MODEL WITH NEW DATA
+    # -----------------------------
+    def update(self, clinic_id, hour, weekday, condition, actual_wait, predicted=None):
+        """Update all stats with new wait time."""
+        clinic = self._get_clinic(clinic_id)
+        wait = self._safe_float(actual_wait, self.default_wait)
+
+        # ---- Overall stats ----
+        clinic["overall"]["total"] += wait
+        clinic["overall"]["count"] += 1
+
+        # ---- Hour bucket ----
+        hkey = str(int(hour) % 24)
+        bucket = clinic["hourly"].setdefault(hkey, {"total": 0.0, "count": 0})
+        bucket["total"] += wait
+        bucket["count"] += 1
+        bucket["value"] = bucket["total"] / bucket["count"]
+
+        # ---- Weekday bucket ----
+        wkey = str(int(weekday) % 7)
+        bucket = clinic["weekday"].setdefault(wkey, {"total": 0.0, "count": 0})
+        bucket["total"] += wait
+        bucket["count"] += 1
+        bucket["value"] = bucket["total"] / bucket["count"]
+
+        # ---- Recent series (trend source) ----
+        clinic["recent"].append(wait)
+        if len(clinic["recent"]) > self.max_history:
+            clinic["recent"] = clinic["recent"][-self.max_history:]
+
+
+    # -----------------------------
+    # PREDICT NEXT HOUR
+    # -----------------------------
+    def predict(self, clinic_id, hour, weekday, condition, fallback=None):
+        """
+        Predict next-hour wait time using:
+        - overall average
+        - same-hour average
+        - same-weekday average
+        - recent trend projection
+        - forward bias so prediction ≠ latest report
+        """
+
+        fallback = self.default_wait if fallback is None else fallback
+        clinic = self._get_clinic(clinic_id)
+
+        # ========== Pull Stats Safely ==========
+        overall = clinic["overall"]
+        if overall["count"] == 0:
+            return float(fallback)
+
+        overall_avg = overall["total"] / overall["count"]
+
+        # ---- Hourly average ----
+        next_hour = str((int(hour) + 1) % 24)
+        hourly_vals = []
+        for entry in clinic["hourly"].values():
+            val = self._safe_float(entry.get("value"))
+            if val is not None:
+                hourly_vals.append(val)
+
+        hourly_avg = (
+            sum(hourly_vals) / len(hourly_vals)
+            if len(hourly_vals) >= 2 else overall_avg
+        )
+
+        # ---- Weekday average ----
+        next_wday = str((int(weekday) + 1) % 7)
+        weekday_vals = []
+        for entry in clinic["weekday"].values():
+            val = self._safe_float(entry.get("value"))
+            if val is not None:
+                weekday_vals.append(val)
+
+        weekday_avg = (
+            sum(weekday_vals) / len(weekday_vals)
+            if len(weekday_vals) >= 2 else overall_avg
+        )
+
+        # ---- Trend projection ----
+        recent = clinic["recent"]
+        trend_proj = None
+        if len(recent) >= 3:
+            # simple linear regression over index positions
+            xs = list(range(len(recent)))
+            ys = [self._safe_float(v, overall_avg) for v in recent]
+
+            n = len(xs)
+            mean_x = sum(xs) / n
+            mean_y = sum(ys) / n
+            denom = sum((x - mean_x)**2 for x in xs)
+
+            if denom > 0:
+                slope = sum((x - mean_x)*(y - mean_y) for x, y in zip(xs, ys)) / denom
+            else:
+                slope = 0.0
+
+            # next value prediction based on slope
+            trend_proj = ys[-1] + slope
+
+        if trend_proj is None:
+            trend_proj = recent[-1] if recent else overall_avg
+
+        # ======== Combine Predictions ========
+        prediction = (
+            0.40 * hourly_avg +
+            0.30 * weekday_avg +
+            0.20 * overall_avg +
+            0.10 * trend_proj
+        )
+
+        # ======== Forward Bias (prevents = latest) ========
+        history_len = len(recent)
+        trend_conf = min(1.0, history_len / 12)
+
+        base_bias = 0.10          # always +10%
+        dynamic = 0.15 * trend_conf
+
+        prediction *= (1 + base_bias + dynamic)
+
+        # Ensure ≥ 0
+        return max(0.0, float(prediction))
+    
+        # ---------------------------------------------------------
+    # SAVE → dict
+    # ---------------------------------------------------------
+    def to_dict(self):
+        """Serialize model stats for storage."""
+        return {
+            "default_wait": self.default_wait,
+            "max_history": self.max_history,
+            "stats": self.stats,
+        }
+
+    # ---------------------------------------------------------
+    # LOAD ← dict
+    # ---------------------------------------------------------
+    @classmethod
+    def from_dict(cls, data: dict):
+        """Rebuild predictor from stored JSON."""
+        obj = cls(
+            default_wait=data.get("default_wait", 30.0),
+            max_history=data.get("max_history", 20),
+        )
+
+        stats = data.get("stats", {})
+
+        # Sanitize values & ensure floats
+        for cid, cstats in stats.items():
+            obj.stats[cid] = {
+                "overall": {
+                    "total": float(cstats["overall"].get("total", 0.0)),
+                    "count": int(cstats["overall"].get("count", 0)),
+                },
+                "hourly": {},
+                "weekday": {},
+                "recent": [],
+            }
+
+            # hourly buckets
+            for h, v in cstats.get("hourly", {}).items():
+                obj.stats[cid]["hourly"][str(h)] = {
+                    "total": float(v.get("total", 0.0)),
+                    "count": int(v.get("count", 0)),
+                    "value": float(v.get("value", 0.0)),
+                }
+
+            # weekday buckets
+            for w, v in cstats.get("weekday", {}).items():
+                obj.stats[cid]["weekday"][str(w)] = {
+                    "total": float(v.get("total", 0.0)),
+                    "count": int(v.get("count", 0)),
+                    "value": float(v.get("value", 0.0)),
+                }
+
+            # recent history list
+            obj.stats[cid]["recent"] = [
+                float(x) for x in cstats.get("recent", []) if str(x).replace('.', '', 1).isdigit()
+            ]
+
+        return obj
 
 def _read_static_page(filename: str) -> str:
     path = STATIC_DIR / filename
@@ -519,7 +609,7 @@ def _checkins_to_geojson(clinics: Dict[str, Dict[str, Any]], model: WaitTimePred
     features = []
     now = datetime.now(timezone.utc)
     
-    for clinic_id, clinic_data in clinics.items():
+    for agg_id, clinic_data in clinics.items():
         location = clinic_data.get("location") or {}
         lat = location.get("latitude")
         lon = location.get("longitude")
@@ -536,14 +626,15 @@ def _checkins_to_geojson(clinics: Dict[str, Dict[str, Any]], model: WaitTimePred
         if math.isnan(lat) or math.isnan(lon):
             continue
 
-        # Predict wait time for next hour
+        # Predict wait time for next hour using SAME ID as create_checkin
         hour = now.hour
         weekday = now.weekday()
         recent_condition = clinic_data.get("current_condition", "Moderate")
         latest_wait = clinic_data.get("latest_wait_time")
-        predicted_wait = model.predict(clinic_id, hour, weekday, recent_condition, latest_wait)
+
+        model_clinic_id = _normalize_clinic_name(clinic_data.get("clinic_name", ""))
+        predicted_wait = model.predict(model_clinic_id, hour, weekday, recent_condition, latest_wait)
         
-        # Determine pin color based on most recent wait time
         recent_wait = clinic_data.get("latest_wait_time")
         reference_wait = recent_wait if recent_wait is not None else predicted_wait
         if reference_wait < 15:
@@ -560,7 +651,7 @@ def _checkins_to_geojson(clinics: Dict[str, Dict[str, Any]], model: WaitTimePred
                 "type": "Feature",
                 "geometry": {"type": "Point", "coordinates": [lon, lat]},
                 "properties": {
-                    "clinic_id": clinic_id,
+                    "clinic_id": agg_id,  # keep aggregated id for map; model uses model_clinic_id
                     "clinic_name": clinic_data.get("clinic_name", "Unknown"),
                     "latest_wait_time": clinic_data.get("latest_wait_time"),
                     "predicted_wait_time": round(predicted_wait, 1),
@@ -573,6 +664,7 @@ def _checkins_to_geojson(clinics: Dict[str, Dict[str, Any]], model: WaitTimePred
         )
 
     return {"type": "FeatureCollection", "features": features}
+
 
 
 DEFAULT_CLINIC_TEMPLATES = [
